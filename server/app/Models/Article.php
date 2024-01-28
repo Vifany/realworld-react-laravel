@@ -17,7 +17,7 @@ class Article extends Model
     ];
 
 
-    //Relation methods
+    //Relations
     public function author()
     {
         return $this->belongsTo(User::class, 'author');
@@ -30,6 +30,12 @@ class Article extends Model
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class, 'article_tag');
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'article_id', 'user_id')
+                    ->withTimestamps();
     }
 }

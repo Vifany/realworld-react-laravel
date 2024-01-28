@@ -16,7 +16,7 @@ class Comment extends Model
     ];
 
 
-    //Relation methods
+    //Relations
     public function author()
     {
         return $this->belongsTo(User::class, 'author');
