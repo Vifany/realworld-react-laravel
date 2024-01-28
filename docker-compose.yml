@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres:latest
+    container_name: postgres-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: conduit_db
+      POSTGRES_USER: conduit_user
+      POSTGRES_PASSWORD: conduit_password
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
