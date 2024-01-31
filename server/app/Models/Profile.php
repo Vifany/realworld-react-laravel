@@ -15,6 +15,7 @@ class Profile extends Model
         'bio',
         'image',
     ];
+    protected $table = 'profiles';
 
     public function user()
     {
