@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Resources\json\CurrentUserResource;
 
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -18,7 +19,10 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = [
+            'email' => $request->input('user.email'),
+            'password' => $request->input('user.password')
+        ];
 
         if (Auth::attempt($credentials)) {
             /**
@@ -28,16 +32,11 @@ class AuthController extends Controller
             $tokenResult = $user->createToken('Personal Access Token');
             $token = $tokenResult->token;
 
-            if ($request->remember_me) {
-                $token->expires_at = Carbon::now()->addWeeks(1);
-            }
-
             $token->save();
 
-            return response()->json([
-                'access_token' => $tokenResult->accessToken,
-                'token_type' => 'Bearer',
-                'expires_at' => Carbon::parse($token->expires_at)->toDateTimeString()
+            return new CurrentUserResource( (object)[
+                'user' =>$user,
+                'token' => $tokenResult->accessToken,
             ]);
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);
