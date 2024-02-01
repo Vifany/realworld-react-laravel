@@ -29,7 +29,7 @@ class AuthController extends Controller
             /**
              * @var App\Models\User $user
              */
-            $user = auth()->user();
+            $user = Auth::user();
 
             return new CurrentUserResource( (object)[
                 'user' =>$user,

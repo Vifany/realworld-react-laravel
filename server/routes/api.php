@@ -40,26 +40,26 @@ The great apistroitelny plan
 - [ ]  Articles
     - [ ]  **GET/articles**Get recent articles globally
     - [ ]  **GET/articles/{slug}**Get an article
-    - [ ]  **POST/articles** Create an article LOG
-    - [ ]  **GET/articles/feed** Get recent articles from users you follow LOG
-    - [ ]  **PUT/articles/{slug}** Update an article LOG
-    - [ ]  **DELETE/articles/{slug}** Delete an article LOG
+    - [ ]  **POST/articles** Create an article AUTH
+    - [ ]  **GET/articles/feed** Get recent articles from users you follow AUTH
+    - [ ]  **PUT/articles/{slug}** Update an article AUTH
+    - [ ]  **DELETE/articles/{slug}** Delete an article AUTH
 - [ ]  Comments
     - [ ]  **GET/articles/{slug}/comments** Get comments for an article
-    - [ ]  **POST/articles/{slug}/comments** Create a comment for an article LOG
-    - [ ]  **DELETE/articles/{slug}/comments/{id}** Delete a comment for an article LOG
+    - [ ]  **POST/articles/{slug}/comments** Create a comment for an article AUTH
+    - [ ]  **DELETE/articles/{slug}/comments/{id}** Delete a comment for an article AUTH
 - [ ]  Favorites
-    - [ ]  **POST/articles/{slug}/favorite** Favorite an article LOG
-    - [ ]  **DELETE/articles/{slug}/favorite** Unfavorite an article LOG
+    - [ ]  **POST/articles/{slug}/favorite** Favorite an article AUTH
+    - [ ]  **DELETE/articles/{slug}/favorite** Unfavorite an article AUTH
 - [ ]  Profile
     - [ ]  **GET/profiles/{username}** Get a profile
-    - [ ]  **POST/profiles/{username}/follow** Follow a user LOG
-    - [ ]  **DELETE/profiles/{username}/follow** Unfollow a user LOG
+    - [ ]  **POST/profiles/{username}/follow** Follow a user AUTH
+    - [ ]  **DELETE/profiles/{username}/follow** Unfollow a user AUTH
 - [ ]  Tags
     - [ ]  **GET/tags** Get tags
-- [ ]  User and Auth
+- [X]  User and Auth
     - [X]  **POST/users/login** Existing user login
     - [X]  **POST/users Register**
-    - [ ]  **GET/user** Get current user LOG
-    - [ ]  **PUT/user**Update current user LOG
+    - [X]  **GET/user** Get current user AUTH
+    - [x]  **PUT/user**Update current user AUTH
 */
