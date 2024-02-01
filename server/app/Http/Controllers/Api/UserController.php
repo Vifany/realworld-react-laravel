@@ -22,16 +22,16 @@ class UserController extends Controller
         try
             {
                 $newUser = DB::transaction(function () use ($request) {
-                $newUser = User::create([
-                    'email' => $request->input('user.email'),
-                    'password' => Hash::make($request->input('user.password')),
-                ]);
-                $newUser->profile()->create([
-                    'username'=>$request->input('user.username')
-                ]);
-                return $newUser;
+                    $newUser = User::create([
+                        'email' => $request->input('user.email'),
+                        'password' => Hash::make($request->input('user.password')),
+                    ]);
+                    $newUser->profile()->create([
+                        'username'=>$request->input('user.username')
+                    ]);
+                    return $newUser;
 
-            });
+                });
 
             $token = Auth::guard('api')->login($newUser);
 

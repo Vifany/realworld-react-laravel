@@ -6,6 +6,7 @@ use App\Http\Controllers\api\{
     AuthController,
     UserController,
     ProfileController,
+    ArticleController
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,15 @@ Route::prefix('/user')->middleware('auth:api')->group(function(){
     Route::PUT('/',[ProfileController::class, 'updateCurrenUser']);
 });
 
+Route::prefix('/articles')->middleware('auth:api')->group(function(){
+    Route::GET('/{slug}',[ArticleController::class]); //**Get an article,
+    Route::GET('/',[ArticleController::class]);//*Get recent articles globally,
+    Route::POST('/',[ArticleController::class]);//* Create an article AUTH,
+    Route::GET('/feed',[ArticleController::class]);//** Get recent articles from users you follow AUTH,
+    Route::PUT('/{slug}',[ArticleController::class]);//** Update an article AUTH,
+    Route::DELETE('/{slug}',[ArticleController::class]);//** Delete an article AUTH,
+
+});
 
 /*
 The great apistroitelny plan
