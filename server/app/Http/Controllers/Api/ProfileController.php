@@ -14,10 +14,14 @@ class ProfileController extends Controller
         /**
          * @var  App\Models\User $user
          */
-
         $user = Auth::user();
+        $token = auth()->getToken()->get();
 
-        return new CurrentUserResource($user);
+
+        return new CurrentUserResource( (object)[
+            'user' =>$user,
+            'token' =>$token,
+        ]);
 
     }
 }

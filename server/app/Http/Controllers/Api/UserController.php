@@ -33,7 +33,7 @@ class UserController extends Controller
 
             });
 
-            $token = $newUser->createToken('Personal Access Token')->accessToken;
+            $token = Auth::guard('api')->login($newUser);
 
             return new CurrentUserResource( (object)[
                 'user' =>$newUser,

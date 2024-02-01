@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -11,6 +11,7 @@ use Carbon\Carbon;
 
 class AuthController extends Controller
 {
+
     /**
      * Login user and create token
      *
@@ -23,20 +24,16 @@ class AuthController extends Controller
             'email' => $request->input('user.email'),
             'password' => $request->input('user.password')
         ];
-
-        if (Auth::attempt($credentials)) {
+        $token= Auth::attempt($credentials);
+        if ($token) {
             /**
              * @var App\Models\User $user
              */
-            $user = Auth::user();
-            $tokenResult = $user->createToken('Personal Access Token');
-            $token = $tokenResult->token;
-
-            $token->save();
+            $user = auth()->user();
 
             return new CurrentUserResource( (object)[
                 'user' =>$user,
-                'token' => $tokenResult->accessToken,
+                'token' => $token,
             ]);
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -56,29 +53,5 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-    /**
-     * Refresh a token
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function refresh(Request $request)
-    {
-        $request->user()->token()->delete();
 
-        $tokenResult = $request->user()->createToken('Personal Access Token');
-        $token = $tokenResult->token;
-
-        if ($request->remember_me) {
-            $token->expires_at = Carbon::now()->addWeeks(1);
-        }
-
-        $token->save();
-
-        return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse($token->expires_at)->toDateTimeString()
-        ]);
-    }
 }

@@ -5,6 +5,7 @@
 use App\Http\Controllers\api\{
     AuthController,
     UserController,
+    ProfileController,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,11 +25,15 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('/users')->group(function() {
-    Route::post('/', [UserController::class, 'registerUser']);
-    Route::post('/login', [AuthController::class, 'login']);
-
-
+    Route::POST('/', [UserController::class, 'registerUser']);
+    Route::POST('/login', [AuthController::class, 'login']);
 });
+
+Route::prefix('/user')->middleware('auth:api')->group(function(){
+    Route::GET('/',[ProfileController::class, 'getCurrenUser']);
+    Route::PUT('/',[ProfileController::class, 'updateCurrenUser']);
+});
+
 
 /*
 The great apistroitelny plan
@@ -53,8 +58,8 @@ The great apistroitelny plan
 - [ ]  Tags
     - [ ]  **GET/tags** Get tags
 - [ ]  User and Auth
-    - [ ]  **POST/users/login** Existing user login
-    - [ ]  **POST/users Register**
+    - [X]  **POST/users/login** Existing user login
+    - [X]  **POST/users Register**
     - [ ]  **GET/user** Get current user LOG
     - [ ]  **PUT/user**Update current user LOG
 */
