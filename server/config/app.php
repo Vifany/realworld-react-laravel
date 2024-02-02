@@ -162,6 +162,7 @@ return [
         /*
          * Application Service Providers...
          */
+        App\Providers\JwtAuthServiceProvider::class,
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,

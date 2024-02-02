@@ -16,6 +16,23 @@ class Article extends Model
         'body',
     ];
 
+    //methods
+
+    public function favoritesCount()
+    {
+        return $this->favorites()->count();
+    }
+
+    public function getTagList()
+    {
+        return $this->tags->pluck('tag')->toArray();
+    }
+
+    public function isFavorited(User $user)
+    {
+        return $this->favorited->contains($user);
+    }
+
 
     //Relations
     public function author()
@@ -25,7 +42,7 @@ class Article extends Model
 
     public function comments()
     {
-        return $this->hasMany(Comment::class, 'author');
+        return $this->hasMany(Comment::class);
     }
 
     public function tags()
@@ -33,9 +50,11 @@ class Article extends Model
         return $this->belongsToMany(Tag::class, 'article_tag');
     }
 
-    public function favoritedBy()
+    public function favorited()
     {
         return $this->belongsToMany(User::class, 'favorites', 'article_id', 'user_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
+
+
 }
