@@ -15,7 +15,7 @@ class AuthController extends Controller
     /**
      * Login user and create token
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function login(Request $request)
@@ -31,10 +31,12 @@ class AuthController extends Controller
              */
             $user = Auth::user();
 
-            return new CurrentUserResource( (object)[
+            return new CurrentUserResource(
+                (object)[
                 'user' =>$user,
                 'token' => $token,
-            ]);
+                 ]
+            );
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -43,7 +45,7 @@ class AuthController extends Controller
     /**
      * Logout user (Revoke the token)
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function logout(Request $request)

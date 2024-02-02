@@ -13,22 +13,26 @@ use App\Http\Requests\{
 
 class ProfileController extends Controller
 {
-    public function getCurrenUser(Request $request){
+    public function getCurrenUser(Request $request)
+    {
         /**
-         * @var  App\Models\User $user
+         * @var App\Models\User $user
          */
         $user = Auth::user();
         $token = Auth::refresh();
 
 
-        return new CurrentUserResource( (object)[
+        return new CurrentUserResource(
+            (object)[
             'user' =>$user,
             'token' =>$token,
-        ]);
+             ]
+        );
 
     }
 
-    public function updateCurrenUser(UpdateUserRequest $request){
+    public function updateCurrenUser(UpdateUserRequest $request)
+    {
         $user = Auth::user();
 
         foreach ($request['user'] as $key => $value) {
@@ -40,9 +44,11 @@ class ProfileController extends Controller
 
         $token = Auth::refresh();
 
-        return new CurrentUserResource( (object)[
+        return new CurrentUserResource(
+            (object)[
             'user' =>$user,
             'token' =>$token,
-        ]);
+             ]
+        );
     }
 }

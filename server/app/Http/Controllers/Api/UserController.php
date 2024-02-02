@@ -18,30 +18,40 @@ use App\Http\Resources\json\CurrentUserResource;
 
 class UserController extends Controller
 {
-    public function registerUser(RegisterUserRequest $request){
+    public function registerUser(RegisterUserRequest $request)
+    {
         try
             {
-                $newUser = DB::transaction(function () use ($request) {
-                    $newUser = User::create([
-                        'email' => $request->input('user.email'),
-                        'password' => Hash::make($request->input('user.password')),
-                    ]);
-                    $newUser->profile()->create([
-                        'username'=>$request->input('user.username')
-                    ]);
-                    return $newUser;
+                $newUser = DB::transaction(
+                    function () use ($request) {
+                        $newUser = User::create(
+                            [
+                            'email' => $request->input('user.email'),
+                            'password' => Hash::make($request->input('user.password')),
+                            ]
+                        );
+                        $newUser->profile()->create(
+                            [
+                            'username'=>$request->input('user.username')
+                            ]
+                        );
+                        return $newUser;
 
-                });
+                    }
+                );
 
             $token = Auth::guard('api')->login($newUser);
 
-            return new CurrentUserResource( (object)[
+            return new CurrentUserResource(
+                (object)[
                 'user' =>$newUser,
                 'token' => $token
-            ]);
+                 ]
+            );
 
         } catch(\Exception $e) {
-            return response()->json([
+            return response()->json(
+                [
                 'error' => 'Failed to register user. ' . $e->getMessage()],
                 422
             );

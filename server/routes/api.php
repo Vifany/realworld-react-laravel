@@ -25,25 +25,31 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::prefix('/users')->group(function() {
-    Route::POST('/', [UserController::class, 'registerUser']);
-    Route::POST('/login', [AuthController::class, 'login']);
-});
+Route::prefix('/users')->group(
+    function () {
+        Route::POST('/', [UserController::class, 'registerUser']);
+        Route::POST('/login', [AuthController::class, 'login']);
+    }
+);
 
-Route::prefix('/user')->middleware('auth:api')->group(function(){
-    Route::GET('/',[ProfileController::class, 'getCurrenUser']);
-    Route::PUT('/',[ProfileController::class, 'updateCurrenUser']);
-});
+Route::prefix('/user')->middleware('auth:api')->group(
+    function () {
+        Route::GET('/', [ProfileController::class, 'getCurrenUser']);
+        Route::PUT('/', [ProfileController::class, 'updateCurrenUser']);
+    }
+);
 
-Route::prefix('/articles')->middleware('auth:api')->group(function(){
-    Route::GET('/{slug}',[ArticleController::class]); //**Get an article,
-    Route::GET('/',[ArticleController::class]);//*Get recent articles globally,
-    Route::POST('/',[ArticleController::class]);//* Create an article AUTH,
-    Route::GET('/feed',[ArticleController::class]);//** Get recent articles from users you follow AUTH,
-    Route::PUT('/{slug}',[ArticleController::class]);//** Update an article AUTH,
-    Route::DELETE('/{slug}',[ArticleController::class]);//** Delete an article AUTH,
+Route::prefix('/articles')->middleware('auth:api')->group(
+    function () {
+        Route::POST('/', [ArticleController::class, 'create']);//* Create an article AUTH,
+        Route::GET('/{slug}', [ArticleController::class, 'read']); //**Get an article,
+        Route::GET('/', [ArticleController::class, 'index']);//*Get recent articles globally,
+        Route::GET('/feed', [ArticleController::class, 'feed']);//** Get recent articles from users you follow AUTH,
+        Route::PUT('/{slug}', [ArticleController::class, 'update']);//** Update an article AUTH,
+        Route::DELETE('/{slug}', [ArticleController::class, 'delete']);//** Delete an article AUTH,
 
-});
+    }
+);
 
 /*
 The great apistroitelny plan
