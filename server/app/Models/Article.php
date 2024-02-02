@@ -11,7 +11,7 @@ class Article extends Model
 
     protected $fillable = [
         'author',
-        'topic',
+        'title',
         'description',
         'body',
     ];
@@ -20,7 +20,7 @@ class Article extends Model
 
     public function favoritesCount()
     {
-        return $this->favorites()->count();
+        return $this->favorited()->count();
     }
 
     public function getTagList()

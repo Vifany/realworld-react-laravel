@@ -22,9 +22,9 @@ class ArticleController extends Controller
             function () use ($request, $user) {
                 $article = new Article();
                 $article->fill(
-                    $request->all()['article']
+                    ($request->all())['article']
                 );
-                $article->author()->associate($user);
+                $article->author=$user->id;
                 $article->save();
                 return $article;
             }

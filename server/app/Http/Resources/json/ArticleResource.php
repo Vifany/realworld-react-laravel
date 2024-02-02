@@ -14,17 +14,19 @@ class ArticleResource extends JsonResource
      *
      * @return array<string, mixed>
      */
+    public static $wrap = null;
     public function toArray(Request $request): array
     {
         $currentUser = $this->user;
         $article = $this->article;
+        $author = $article->author()->first();
         return [
             "article"=> [
                 "author"=>  [
-                  "bio"=>  $article->author->profile->bio,
-                  "following"=>  $article->author->isFollowing($currentUser),
-                  "image"=>  $article->author->profile->image,
-                  "username"=>  $article->author->profile->username,
+                  "bio"=>  $author->profile->bio,
+                  "following"=>  $author->isFollowing($currentUser),
+                  "image"=>  $author->profile->image,
+                  "username"=>  $author->profile->username,
                 ],
                 "body"=>  $article->body,
                 "createdAt"=>  $article->created_at,
