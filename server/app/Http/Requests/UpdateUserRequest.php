@@ -22,9 +22,11 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'bio' => 'nullable|string|max:512',
-            'image' => 'nullable|string|url',
-            'username'=> 'nullable|max:64|unique:profile,username',
+            'user.email' => 'nullable|email',
+            'user.password' => 'nullable|min:16',
+            'user.username' => 'nullable|max:64',
+            'user.bio' => 'nullable',
+            'user.image' => 'nullable|url'
         ];
     }
 }

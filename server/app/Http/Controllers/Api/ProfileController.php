@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\{
+    Auth,
+    DB
+};
 use App\Http\Resources\json\CurrentUserResource;
 use App\Http\Requests\{
     UpdateUserRequest,
@@ -35,12 +38,13 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        foreach ($request['user'] as $key => $value) {
-            // Only update the field if the value is not null
-            if ($value !== null) {
-                $user->profile->$key = $value;
-            }
-        }
+            DB::transaction(
+                function () use ($user,$request) {
+                    $user->fill($request->all()['user']);
+                    $user->profile->fill($request->all()['user']);
+                    $user->save();
+                }
+            );
 
         $token = Auth::refresh();
 

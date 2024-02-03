@@ -24,7 +24,7 @@ class ArticleController extends Controller
                 $article->fill(
                     ($request->all())['article']
                 );
-                $article->author=$user->id;
+                $article->author = $user->id;
                 $article->save();
                 return $article;
             }
@@ -32,16 +32,30 @@ class ArticleController extends Controller
 
         return new ArticleResource(
             (object)[
-            'user'=>$user,
-            'article'=>$article
+                'user' => $user,
+                'article' => $article
             ]
         );
-
     }
 
-    public function read($request)
+    public function read(Request $request, $slug)
     {
-        //
+        $article = Article::find($slug);
+        if ($article) {
+            return new ArticleResource(
+                (object)[
+                    'user' => Auth::user(),
+                    'article' => $article
+                ]
+            );
+        } else {
+            return response()->json(
+                    [
+                        'error' => 'Article not Found'
+                    ],
+                    404
+                );
+        }
     }
 
     public function index($request)
@@ -63,5 +77,4 @@ class ArticleController extends Controller
     {
         //
     }
-
 }
