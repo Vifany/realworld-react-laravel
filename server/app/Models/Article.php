@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class Article extends Model
 {
@@ -14,6 +16,7 @@ class Article extends Model
         'title',
         'description',
         'body',
+        'slug'
     ];
 
     //methods
@@ -28,11 +31,18 @@ class Article extends Model
         return $this->tags->pluck('tag')->toArray();
     }
 
-    public function isFavorited(User $user)
+    public function isAuthor(User $user): bool
     {
-        return $this->favorited->contains($user);
+        return $this->author == $user->id;
     }
 
+    public function isFavorited(?User $user)
+    {
+        if ($user!=null) {
+            return $this->favorited->contains($user);
+        }
+        return null;
+    }
 
     //Relations
     public function author()
@@ -56,5 +66,30 @@ class Article extends Model
             ->withTimestamps();
     }
 
+    //Medjiq
+
+    /**
+     * Botinok with modifications
+     *
+     * @return parent
+     */
+    public function save(array $options = [])
+    {
+
+        $this->generateSlug();
+        return parent::save($options);
+    }
+
+    /**
+     * Function to generate and save dat slug
+     *
+     * @return void
+     */
+    protected function generateSlug()
+    {
+        $createdAtDate = Carbon::now()->format('Y-m-d');
+        $slog = Str::slug($this->title);
+        $this->date_slug = "{$slog}-{$createdAtDate}";
+    }
 
 }

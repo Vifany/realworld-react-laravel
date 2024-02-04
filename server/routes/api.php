@@ -41,9 +41,11 @@ Route::prefix('/user')->middleware('auth:api')->group(
 
 Route::prefix('/articles')->middleware('auth:api')->group(
     function () {
-        Route::POST('/', [ArticleController::class, 'create']);//* Create an article AUTH,
-        Route::GET('/{slug}', [ArticleController::class, 'read']); //**Get an article,
-        Route::GET('/', [ArticleController::class, 'index']);//*Get recent articles globally,
+        Route::POST('/', [ArticleController::class, 'create']);
+        Route::GET('/{slug}', [ArticleController::class, 'read'])
+            ->withoutMiddleware('auth:api');
+        Route::GET('/', [ArticleController::class, 'index'])
+            ->withoutMiddleware('auth:api');
         Route::GET('/feed', [ArticleController::class, 'feed']);//** Get recent articles from users you follow AUTH,
         Route::PUT('/{slug}', [ArticleController::class, 'update']);//** Update an article AUTH,
         Route::DELETE('/{slug}', [ArticleController::class, 'delete']);//** Delete an article AUTH,
@@ -54,12 +56,12 @@ Route::prefix('/articles')->middleware('auth:api')->group(
 /*
 The great apistroitelny plan
 - [ ]  Articles
-    - [ ]  **GET/articles**Get recent articles globally
-    - [ ]  **GET/articles/{slug}**Get an article
-    - [ ]  **POST/articles** Create an article AUTH
+    - [X]  **GET/articles**Get recent articles globally
+    - [X]  **GET/articles/{slug}**Get an article
+    - [X]  **POST/articles** Create an article AUTH
     - [ ]  **GET/articles/feed** Get recent articles from users you follow AUTH
-    - [ ]  **PUT/articles/{slug}** Update an article AUTH
-    - [ ]  **DELETE/articles/{slug}** Delete an article AUTH
+    - [X]  **PUT/articles/{slug}** Update an article AUTH
+    - [X]  **DELETE/articles/{slug}** Delete an article AUTH
 - [ ]  Comments
     - [ ]  **GET/articles/{slug}/comments** Get comments for an article
     - [ ]  **POST/articles/{slug}/comments** Create a comment for an article AUTH

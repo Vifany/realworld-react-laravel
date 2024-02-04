@@ -56,19 +56,19 @@ class User extends Authenticatable implements JWTSubject
     public function followings()
     {
         return $this->belongsToMany(User::class, 'following', 'user_id', 'follower_user_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     public function followers()
     {
         return $this->belongsToMany(User::class, 'following', 'follower_user_id', 'user_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     public function favorites()
     {
         return $this->belongsToMany(Article::class, 'favorites', 'user_id', 'article_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
 
@@ -83,9 +83,13 @@ class User extends Authenticatable implements JWTSubject
         $this->followings()->detach($user->id);
     }
 
-    public function isFollowing(User $user)
+    public function isFollowing(?User $user)
     {
-        return $this->followings->contains($user);
+        if ($user!=null) {
+            return $this->followings->contains($user);
+        }
+
+        return null;
     }
 
     public function favorite(Article $article)

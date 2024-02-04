@@ -12,16 +12,16 @@ class ArticleResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
+     *      *
      * @return array<string, mixed>
      */
-    public static $wrap = null;
+    public static $wrap = 'article';
     public function toArray(Request $request): array
     {
-        $currentUser = $this->user;
-        $article = $this->article;
+        $currentUser = Auth::user();
+        $article = $this;
         $author = $article->author()->first();
         return [
-            "article"=> [
                 "author"=>  [
                   "bio"=>  $author->profile->bio,
                   "following"=>  $author->isFollowing($currentUser),
@@ -33,11 +33,10 @@ class ArticleResource extends JsonResource
                 "description"=>  $article->description,
                 "favorited"=>  $article->isFavorited($currentUser),
                 "favoritesCount"=>  $article->favoritesCount(),
-                "slug"=>  $article->id,
+                "slug"=>  $article->date_slug,
                 "tagList"=>  $article->getTagList(),
                 "title"=>  $article->title,
                 "updatedAt"=>  $article->updated_at
-                ]
-        ];
+                ];
     }
 }

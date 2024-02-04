@@ -14,7 +14,8 @@ class ArticleFactory extends Factory
     public function definition()
     {
 
-        //Some highly powerful sorcerism which sets created_at for article after author's created_at
+        //Some highly powerful sorcerism which sets
+        //created_at for article after author's created_at
         $author = User::inRandomOrder()->first();
         $createdAt = $author->created_at;
         $offsetMinutes = rand(60, 7 * 24 * 60);
@@ -22,7 +23,7 @@ class ArticleFactory extends Factory
 
         return [
             'author' => $author,
-            'topic' => $this->faker->sentence,
+            'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
             'body' => $this->faker->paragraphs(3, true),
             'created_at' => $createdAtWithOffset,
