@@ -23,7 +23,6 @@ class UserFactory extends Factory
         $createdAt = now()->subMinutes($randomMinutes);
 
         return [
-            'name' => fake()->unique()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password123456789'),
             'created_at' => $createdAt,

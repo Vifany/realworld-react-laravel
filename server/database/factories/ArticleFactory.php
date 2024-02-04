@@ -22,9 +22,9 @@ class ArticleFactory extends Factory
         $createdAtWithOffset = Carbon::parse($createdAt)->addMinutes($offsetMinutes);
 
         return [
-            'author' => $author,
+            'author_id' => $author,
             'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
+            'description' => $this->faker->sentence,
             'body' => $this->faker->paragraphs(3, true),
             'created_at' => $createdAtWithOffset,
         ];

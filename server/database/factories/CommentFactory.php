@@ -31,8 +31,8 @@ class CommentFactory extends Factory
         $createdAt = now()->subMinutes($randomMinutes);
 
         return [
-            'author' => $this->faker->randomElement($userIds),
-            'article' => $article,
+            'author_id' => $this->faker->randomElement($userIds),
+            'article_id' => $article,
             'body' => $this->faker->paragraph,
             'created_at' => $createdAtWithOffset,
         ];

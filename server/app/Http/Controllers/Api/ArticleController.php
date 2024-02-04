@@ -6,15 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateArticleRequest;
 use App\Http\Resources\json\ArticleResource;
-
-use App\Models\{
-    Article,
-    Tag
-    };
-use Illuminate\Support\Facades\{
-    Auth,
-    DB
-};
+use App\Models\Article;
+use App\Models\Tag;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ArticleController extends Controller
 {
@@ -34,7 +29,7 @@ class ArticleController extends Controller
                 $article->save();
 
                 foreach ($tags as $tag) {
-                    $tag = Tag::firstOrCreate(['tag'=>$tag]);
+                    $tag = Tag::firstOrCreate(['tag' => $tag]);
                     $article->tags()->attach($tag);
                 }
 
@@ -43,7 +38,7 @@ class ArticleController extends Controller
         );
 
         return [
-            'article' => new ArticleResource($article)
+            'article' => new ArticleResource($article),
             ];
     }
 
@@ -52,19 +47,19 @@ class ArticleController extends Controller
         $article = Article::where('date_slug', $slug)->first();
         if ($article) {
             return [
-                'article' => new ArticleResource($article)
+                'article' => new ArticleResource($article),
                 ];
         } else {
             return response()->json(
                 [
-                        'error' => 'Article not Found'
+                        'error' => 'Article not Found',
                     ],
                 404
             );
         }
     }
 
-    public function index(Request $request = null )
+    public function index(Request $request = null)
     {
         if ($request == null) {
             $request = new Request();
@@ -76,7 +71,8 @@ class ArticleController extends Controller
 
         if ($tag = $request->input('tag',)) {
             $query->whereHas(
-                'tags', function ($query) use ($tag) {
+                'tags',
+                function ($query) use ($tag) {
                     $query->where('tag', $tag);
                 }
             );
@@ -88,7 +84,8 @@ class ArticleController extends Controller
 
         if ($user = $request->input('favorited')) {
             $query->whereHas(
-                'favorited', function ($query) use ($user) {
+                'favorited',
+                function ($query) use ($user) {
                     $query->where('user_id', $user);
                 }
             );
@@ -99,8 +96,8 @@ class ArticleController extends Controller
 
         $articles = ArticleResource::collection($query->get());
         return [
-            'articlesCount'=>$articles->count(),
-            'articles'=>$articles
+            'articlesCount' => $articles->count(),
+            'articles' => $articles
             ];
     }
 
@@ -112,15 +109,12 @@ class ArticleController extends Controller
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
         $user = Auth::user();
-        $articles = ArticleResource::collection(
-            $user->favorites()
-                ->skip($offset)
-                ->paginate($limit)
-        );
+        $articles = ArticleResource::collection();
+
 
         return [
-            'articlesCount'=>$articles->count(),
-            'articles'=>$articles
+            'articlesCount' => $articles->count(),
+            'articles' => $articles
             ];
     }
 
@@ -129,10 +123,9 @@ class ArticleController extends Controller
         $user = Auth::user();
         $article = Article::where('date_slug', $slug)->first();
         if (!($article->isAuthor($user))) {
-            return
-            response()->json(
+            return response()->json(
                 [
-                        'error' => 'Unauthorized'
+                        'error' => 'Unauthorized',
                     ],
                 403
             );
@@ -149,9 +142,8 @@ class ArticleController extends Controller
         );
 
         return [
-            'article' => new ArticleResource($article)
+            'article' => new ArticleResource($article),
             ];
-
     }
 
     public function delete(Request $request, $slug)
@@ -159,21 +151,19 @@ class ArticleController extends Controller
         $user = Auth::user();
         $article = Article::where('date_slug', $slug)->first();
         if (!($article->isAuthor($user))) {
-            return
-            response()->json(
+            return response()->json(
                 [
-                        'error' => 'Unauthorized'
+                        'error' => 'Unauthorized',
                     ],
                 403
             );
         }
 
-        $article ->delete();
+        $article->delete();
 
-        return
-        response()->json(
+        return response()->json(
             [
-                    'message' => 'Article successfully Deleted'
+                    'message' => 'Article successfully Deleted',
                 ],
             204
         );

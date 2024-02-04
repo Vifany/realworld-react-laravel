@@ -85,11 +85,11 @@ class User extends Authenticatable implements JWTSubject
 
     public function isFollowing(?User $user)
     {
-        if ($user!=null) {
+        if ($user != null) {
             return $this->followings->contains($user);
         }
 
-        return null;
+        return false;
     }
 
     public function favorite(Article $article)

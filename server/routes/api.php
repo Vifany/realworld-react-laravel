@@ -1,16 +1,14 @@
 <?php
 
-
-
 use App\Http\Controllers\api\{
     AuthController,
     UserController,
     ProfileController,
-    ArticleController
+    ArticleController,
+    CommentController,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -32,38 +30,48 @@ Route::prefix('/users')->group(
     }
 );
 
-Route::prefix('/user')->middleware('auth:api')->group(
+
+
+Route::group(
+    ['middleware' => 'auth:api', 'prefix' => '/user'],
     function () {
         Route::GET('/', [ProfileController::class, 'getCurrenUser']);
         Route::PUT('/', [ProfileController::class, 'updateCurrenUser']);
     }
 );
 
-Route::prefix('/articles')->middleware('auth:api')->group(
+Route::group(
+    ['middleware' => 'auth:api','prefix' => '/articles'],
     function () {
         Route::POST('/', [ArticleController::class, 'create']);
         Route::GET('/', [ArticleController::class, 'index'])
             ->withoutMiddleware('auth:api');
         Route::GET('/feed', [ArticleController::class, 'feed']);
-        Route::prefix('/{slug}')->group(
+
+        Route::group(
+            ['prefix' => '/{slug}'],
             function () {
                 Route::GET('/', [ArticleController::class, 'read'])
                     ->withoutMiddleware('auth:api');
                 Route::PUT('/', [ArticleController::class, 'update']);
                 Route::DELETE('/', [ArticleController::class, 'delete']);
-                Route::prefix('/favorite')->group(
+
+                Route::group(
+                    ['prefix' => '/favorite'],
                     function () {
                         Route::POST('/', [UserController::class, 'favorite']);
                         Route::DELETE('/', [UserController::class, 'unfavorite']);
                     }
                 );
-                Route::prefix('/comments')->group(
+
+                Route::group(
+                    ['prefix' => '/comments'],
                     function () {
-                        Route::GET('/', [ArticleController::class, 'getComments']);
-                        Route::POST('/', [CommentsController::class, 'postComment']);
+                        Route::GET('/', [CommentController::class, 'read']);
+                        Route::POST('/', [CommentController::class, 'create']);
                         Route::DELETE(
                             '/{id}',
-                            [CommentsController::class, 'delete']
+                            [CommentController::class, 'delete']
                         );
                     }
                 );
@@ -74,7 +82,7 @@ Route::prefix('/articles')->middleware('auth:api')->group(
 
 /*
 The great apistroitelny plan
-- [ ]  Articles
+- [X]  Articles
     - [X]  **GET/articles**Get recent articles globally
     - [X]  **GET/articles/{slug}**Get an article
     - [X]  **POST/articles** Create an article AUTH
@@ -82,12 +90,12 @@ The great apistroitelny plan
     - [X]  **PUT/articles/{slug}** Update an article AUTH
     - [X]  **DELETE/articles/{slug}** Delete an article AUTH
 - [ ]  Comments
-    - [ ]  **GET/articles/{slug}/comments** Get comments for an article
-    - [ ]  **POST/articles/{slug}/comments** Create a comment for an article AUTH
+    - [X]  **GET/articles/{slug}/comments** Get comments for an article
+    - [X]  **POST/articles/{slug}/comments** Create a comment for an article AUTH
     - [ ]  **DELETE/articles/{slug}/comments/{id}** Delete a comment for an article AUTH
-- [ ]  Favorites
-    - [ ]  **POST/articles/{slug}/favorite** Favorite an article AUTH
-    - [ ]  **DELETE/articles/{slug}/favorite** Unfavorite an article AUTH
+- [X]  Favorites
+    - [X]  **POST/articles/{slug}/favorite** Favorite an article AUTH
+    - [X]  **DELETE/articles/{slug}/favorite** Unfavorite an article AUTH
 - [ ]  Profile
     - [ ]  **GET/profiles/{username}** Get a profile
     - [ ]  **POST/profiles/{username}/follow** Follow a user AUTH

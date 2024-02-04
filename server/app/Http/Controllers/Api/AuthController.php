@@ -22,9 +22,9 @@ class AuthController extends Controller
     {
         $credentials = [
             'email' => $request->input('user.email'),
-            'password' => $request->input('user.password')
+            'password' => $request->input('user.password'),
         ];
-        $token= Auth::attempt($credentials);
+        $token = Auth::attempt($credentials);
         if ($token) {
             /**
              * @var App\Models\User $user
@@ -32,8 +32,8 @@ class AuthController extends Controller
             $user = Auth::user();
 
             return new CurrentUserResource(
-                (object)[
-                'user' =>$user,
+                (object) [
+                'user' => $user,
                 'token' => $token,
                  ]
             );
@@ -54,6 +54,4 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Successfully logged out']);
     }
-
-
 }
