@@ -42,15 +42,33 @@ Route::prefix('/user')->middleware('auth:api')->group(
 Route::prefix('/articles')->middleware('auth:api')->group(
     function () {
         Route::POST('/', [ArticleController::class, 'create']);
-        Route::GET('/feed', [ArticleController::class, 'feed']);//** Get recent articles from users you follow AUTH,
-        Route::GET('/{slug}', [ArticleController::class, 'read'])
-            ->withoutMiddleware('auth:api');
         Route::GET('/', [ArticleController::class, 'index'])
             ->withoutMiddleware('auth:api');
-        Route::PUT('/{slug}', [ArticleController::class, 'update']);//** Update an article AUTH,
-        Route::DELETE('/{slug}', [ArticleController::class, 'delete']);//** Delete an article AUTH,
-        Route::POST('/{slug}/favorite/', [UserController::class, 'favorite']); //- [ ]  **POST/articles/{slug}/favorite** Favorite an article AUTH
-        Route::DELETE('/{slug}/favorite/', [UserController::class, 'unfavorite']);//- [ ]  **DELETE/articles/{slug}/favorite** Unfavorite an article AUTH
+        Route::GET('/feed', [ArticleController::class, 'feed']);
+        Route::prefix('/{slug}')->group(
+            function () {
+                Route::GET('/', [ArticleController::class, 'read'])
+                    ->withoutMiddleware('auth:api');
+                Route::PUT('/', [ArticleController::class, 'update']);
+                Route::DELETE('/', [ArticleController::class, 'delete']);
+                Route::prefix('/favorite')->group(
+                    function () {
+                        Route::POST('/', [UserController::class, 'favorite']);
+                        Route::DELETE('/', [UserController::class, 'unfavorite']);
+                    }
+                );
+                Route::prefix('/comments')->group(
+                    function () {
+                        Route::GET('/', [ArticleController::class, 'getComments']);
+                        Route::POST('/', [CommentsController::class, 'postComment']);
+                        Route::DELETE(
+                            '/{id}',
+                            [CommentsController::class, 'delete']
+                        );
+                    }
+                );
+            }
+        );
     }
 );
 
