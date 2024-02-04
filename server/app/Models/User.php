@@ -94,12 +94,16 @@ class User extends Authenticatable implements JWTSubject
 
     public function favorite(Article $article)
     {
-        $this->favorites()->attach($article->id);
+        if (!$this->hasFavorited($article)) {
+            $this->favorites()->attach($article->id);
+        };
     }
 
     public function unfavorite(Article $article)
     {
-        $this->favorites()->detach($article->id);
+        if ($this->hasFavorited($article)) {
+            $this->favorites()->detach($article->id);
+        };
     }
 
     public function hasFavorited(Article $article)

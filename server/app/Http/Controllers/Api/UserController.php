@@ -12,7 +12,8 @@ use App\Http\Requests\{
 use Illuminate\Support\Facades\Hash;
 use App\Models\{
     User,
-    Profile
+    Profile,
+    Article
 };
 use App\Http\Resources\json\CurrentUserResource;
 
@@ -27,7 +28,9 @@ class UserController extends Controller
                         $newUser = User::create(
                             [
                             'email' => $request->input('user.email'),
-                            'password' => Hash::make($request->input('user.password')),
+                            'password' => Hash::make(
+                                $request->input('user.password')
+                            ),
                             ]
                         );
                         $newUser->profile()->create(
@@ -56,5 +59,39 @@ class UserController extends Controller
                 422
             );
         }
+    }
+
+    public function favorite(Request $request, $slug)
+    {
+        if ($article = Article::where('date_slug', $slug)->first()) {
+            Auth::user()->favorite($article);
+            return response()->json(
+                [
+                'message' => 'Article added to Favorites'],
+                200
+            );
+        }
+        return response()->json(
+            [
+            'error' => 'Article not Found'],
+            404
+        );
+    }
+
+    public function unfavorite(Request $request, $slug)
+    {
+        if ($article = Article::where('date_slug', $slug)->first()) {
+            Auth::user()->unfavorite($article);
+            return response()->json(
+                [
+                'message' => 'Article removed from Favorites'],
+                203
+            );
+        }
+        return response()->json(
+            [
+            'error' => 'Article not Found'],
+            404
+        );
     }
 }

@@ -42,14 +42,15 @@ Route::prefix('/user')->middleware('auth:api')->group(
 Route::prefix('/articles')->middleware('auth:api')->group(
     function () {
         Route::POST('/', [ArticleController::class, 'create']);
+        Route::GET('/feed', [ArticleController::class, 'feed']);//** Get recent articles from users you follow AUTH,
         Route::GET('/{slug}', [ArticleController::class, 'read'])
             ->withoutMiddleware('auth:api');
         Route::GET('/', [ArticleController::class, 'index'])
             ->withoutMiddleware('auth:api');
-        Route::GET('/feed', [ArticleController::class, 'feed']);//** Get recent articles from users you follow AUTH,
         Route::PUT('/{slug}', [ArticleController::class, 'update']);//** Update an article AUTH,
         Route::DELETE('/{slug}', [ArticleController::class, 'delete']);//** Delete an article AUTH,
-
+        Route::POST('/{slug}/favorite/', [UserController::class, 'favorite']); //- [ ]  **POST/articles/{slug}/favorite** Favorite an article AUTH
+        Route::DELETE('/{slug}/favorite/', [UserController::class, 'unfavorite']);//- [ ]  **DELETE/articles/{slug}/favorite** Unfavorite an article AUTH
     }
 );
 
@@ -59,7 +60,7 @@ The great apistroitelny plan
     - [X]  **GET/articles**Get recent articles globally
     - [X]  **GET/articles/{slug}**Get an article
     - [X]  **POST/articles** Create an article AUTH
-    - [ ]  **GET/articles/feed** Get recent articles from users you follow AUTH
+    - [X]  **GET/articles/feed** Get recent articles from users you follow AUTH
     - [X]  **PUT/articles/{slug}** Update an article AUTH
     - [X]  **DELETE/articles/{slug}** Delete an article AUTH
 - [ ]  Comments

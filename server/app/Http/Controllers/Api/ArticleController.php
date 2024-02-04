@@ -104,9 +104,24 @@ class ArticleController extends Controller
             ];
     }
 
-    public function feed($request)
+    public function feed(Request $request)
     {
-        //
+        if ($request == null) {
+            $request = new Request();
+        }
+        $limit = $request->input('limit', 20);
+        $offset = $request->input('offset', 0);
+        $user = Auth::user();
+        $articles = ArticleResource::collection(
+            $user->favorites()
+                ->skip($offset)
+                ->paginate($limit)
+        );
+
+        return [
+            'articlesCount'=>$articles->count(),
+            'articles'=>$articles
+            ];
     }
 
     public function update(Request $request, $slug)
