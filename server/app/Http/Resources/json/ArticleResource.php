@@ -24,7 +24,7 @@ class ArticleResource extends JsonResource
         return [
                 "author"=>  [
                   "bio"=>  $author->profile->bio,
-                  "following"=>  $author->isFollowing($currentUser),
+                  "following"=>  $author->isFollowed($currentUser),
                   "image"=>  $author->profile->image,
                   "username"=>  $author->profile->username,
                 ],

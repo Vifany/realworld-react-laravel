@@ -1,11 +1,13 @@
 <?php
 
+
 use App\Http\Controllers\api\{
     AuthController,
     UserController,
     ProfileController,
     ArticleController,
     CommentController,
+    TagController,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,18 +45,16 @@ Route::group(
 Route::group(
     ['middleware' => 'auth:api','prefix' => '/articles'],
     function () {
-        Route::POST('/', [ArticleController::class, 'create']);
-        Route::GET('/', [ArticleController::class, 'index'])
-            ->withoutMiddleware('auth:api');
+        Route::POST('/', [ArticleController::class, 'store']);
+        Route::GET('/', [ArticleController::class, 'index'])->withoutMiddleware('auth:api');
         Route::GET('/feed', [ArticleController::class, 'feed']);
 
         Route::group(
             ['prefix' => '/{slug}'],
             function () {
-                Route::GET('/', [ArticleController::class, 'read'])
-                    ->withoutMiddleware('auth:api');
+                Route::GET('/', [ArticleController::class, 'show'])->withoutMiddleware('auth:api');
                 Route::PUT('/', [ArticleController::class, 'update']);
-                Route::DELETE('/', [ArticleController::class, 'delete']);
+                Route::DELETE('/', [ArticleController::class, 'destroy']);
 
                 Route::group(
                     ['prefix' => '/favorite'],
@@ -69,16 +69,25 @@ Route::group(
                     function () {
                         Route::GET('/', [CommentController::class, 'read']);
                         Route::POST('/', [CommentController::class, 'create']);
-                        Route::DELETE(
-                            '/{id}',
-                            [CommentController::class, 'delete']
-                        );
+                        Route::DELETE('/{id}', [CommentController::class, 'delete']);
                     }
                 );
             }
         );
     }
 );
+
+
+Route::group(
+    ['middleware' => 'auth:api', 'prefix' => '/profiles/{username}'],
+    function () {
+        Route::GET('/', [ProfileController::Class, 'show']);
+        Route::POST('/follow', [ProfileController::Class, 'follow']);
+        Route::DELETE('/follow', [ProfileController::Class, 'unfollow']);
+    }
+);
+
+Route::GET('/tags', [TagController::Class, 'index']);
 
 /*
 The great apistroitelny plan
@@ -89,19 +98,19 @@ The great apistroitelny plan
     - [X]  **GET/articles/feed** Get recent articles from users you follow AUTH
     - [X]  **PUT/articles/{slug}** Update an article AUTH
     - [X]  **DELETE/articles/{slug}** Delete an article AUTH
-- [ ]  Comments
+- [X]  Comments
     - [X]  **GET/articles/{slug}/comments** Get comments for an article
     - [X]  **POST/articles/{slug}/comments** Create a comment for an article AUTH
-    - [ ]  **DELETE/articles/{slug}/comments/{id}** Delete a comment for an article AUTH
+    - [X]  **DELETE/articles/{slug}/comments/{id}** Delete a comment for an article AUTH
 - [X]  Favorites
     - [X]  **POST/articles/{slug}/favorite** Favorite an article AUTH
     - [X]  **DELETE/articles/{slug}/favorite** Unfavorite an article AUTH
-- [ ]  Profile
-    - [ ]  **GET/profiles/{username}** Get a profile
-    - [ ]  **POST/profiles/{username}/follow** Follow a user AUTH
-    - [ ]  **DELETE/profiles/{username}/follow** Unfollow a user AUTH
-- [ ]  Tags
-    - [ ]  **GET/tags** Get tags
+- [X]  Profile
+    - [X]  **GET/profiles/{username}** Get a profile
+    - [X]  **POST/profiles/{username}/follow** Follow a user AUTH
+    - [X]  **DELETE/profiles/{username}/follow** Unfollow a user AUTH
+- [X]  Tags
+    - [X]  **GET/tags** Get tags
 - [X]  User and Auth
     - [X]  **POST/users/login** Existing user login
     - [X]  **POST/users Register**

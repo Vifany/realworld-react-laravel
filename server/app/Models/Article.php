@@ -12,7 +12,7 @@ class Article extends Model
     use HasFactory;
 
     protected $fillable = [
-        'author',
+        'author_id',
         'title',
         'description',
         'body',
@@ -47,7 +47,7 @@ class Article extends Model
     //Relations
     public function author()
     {
-        return $this->belongsTo(User::class, 'author');
+        return $this->belongsTo(User::class);
     }
 
     public function comments()

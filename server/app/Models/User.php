@@ -1,14 +1,12 @@
-<?php
-
-namespace App\Models;
-
-
+<?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
+
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
@@ -45,7 +43,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function articles()
     {
-        return $this->hasMany(Article::class, 'author');
+        return $this->hasMany(Article::class, 'author_id');
     }
 
     public function comments()
@@ -73,20 +71,40 @@ class User extends Authenticatable implements JWTSubject
 
 
     //Methods
-    public function follow(User $user)
+
+    public function getFeed()
     {
-        $this->followings()->attach($user->id);
+        $feed = new Collection();
+        foreach ($this->followings()->get() as $leader) {
+            $feed = $feed->concat($leader->articles()->get());
+        }
+        return $feed;
     }
 
-    public function unfollow(User $user)
+    public function follow($user)
     {
-        $this->followings()->detach($user->id);
+        $this->followings()->attach($user);
+    }
+
+    public function unfollow($user)
+    {
+        $this->followings()->detach($user);
     }
 
     public function isFollowing(?User $user)
     {
         if ($user != null) {
             return $this->followings->contains($user);
+        }
+
+        return false;
+    }
+
+
+    public function isFollowed(?User $user)
+    {
+        if ($user != null) {
+            return $this->followers->contains($user);
         }
 
         return false;

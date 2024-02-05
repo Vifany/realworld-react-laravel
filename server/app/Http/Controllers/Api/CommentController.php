@@ -64,5 +64,24 @@ class CommentController extends Controller
 
     public function delete(Request $request, $slug, $id)
     {
+        $user = Auth::user();
+        $comment = Comment::where('id', $id)->first();
+        if (!($comment->isAuthor($user))) {
+            return response()->json(
+                [
+                        'error' => 'Unauthorized',
+                    ],
+                403
+            );
+        }
+
+        $comment->delete();
+
+        return response()->json(
+            [
+                    'message' => 'Comment successfully Deleted',
+                ],
+            204
+        );
     }
 }

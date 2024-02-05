@@ -66,7 +66,9 @@
     <rule ref="PSR2.Files.EndFileNewline"/>
     <rule ref="PSR2.Methods.MethodDeclaration"/>
     <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
-    <rule ref="PSR2.Namespaces.UseDeclaration"/>
+    <rule ref="PSR2.Namespaces.UseDeclaration">
+        <exclude name="PSR2.Namespaces.UseDeclaration.MultipleDeclarations" />
+    </rule>
     <rule ref="PSR1">
         <exclude-pattern>*.php</exclude-pattern>
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>

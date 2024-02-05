@@ -17,8 +17,19 @@ class Profile extends Model
     ];
     protected $table = 'profiles';
 
+    //Relations
+
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+
+    //Methods
+
+    public static function idByName($username)
+    {
+        $profile = self::where('username', $username)->first();
+        return $profile ? $profile->user_id : null;
     }
 }
