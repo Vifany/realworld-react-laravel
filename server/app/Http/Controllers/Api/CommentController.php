@@ -16,7 +16,7 @@ class CommentController extends Controller
     public function store(CommentRequest $request, $slug)
     {
         $article = Article::Slugged($slug)->first();
-        if ($article == null) {
+        if (!$article) {
             return response()->json(
                 [
                     'error' => 'Article not Found',
@@ -32,7 +32,6 @@ class CommentController extends Controller
                     'author_id' => $request->user()->id,
                 ]
             )
-
         );
 
         return [
@@ -61,13 +60,8 @@ class CommentController extends Controller
     public function destroy(Request $request, $slug, $id)
     {
         $comment = Comment::where('id', $id)->first();
-        if (!($comment->isAuthor($request->user()))) {
-            return response()->json(
-                [
-                        'error' => 'Not author of comment',
-                    ],
-                403
-            );
+        if (Gate::denies('d-comment', $comment)) {
+            abort(403, 'Unauthorized action.');
         }
 
         $comment->delete();

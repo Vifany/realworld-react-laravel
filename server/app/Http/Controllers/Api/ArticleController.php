@@ -110,13 +110,9 @@ class ArticleController extends Controller
     public function update(Request $request, $slug)
     {
         $article = Article::Slugged($slug)->first();
-        if (!($article->isAuthor($request->user()))) {
-            return response()->json(
-                [
-                        'error' => 'Unauthorized',
-                    ],
-                403
-            );
+
+        if (Gate::denies('ud-article', $article)) {
+            abort(403, 'Unauthorized action.');
         }
 
         $article = DB::transaction(
@@ -137,14 +133,13 @@ class ArticleController extends Controller
     public function destroy(Request $request, $slug)
     {
         $article = Article::Slugged($slug)->first();
-        if (!($article->isAuthor($request->user()))) {
-            return response()->json(
-                [
-                        'error' => 'Unauthorized',
-                    ],
-                403
-            );
+
+        if (Gate::denies('ud-article', $article)) {
+            abort(403, 'Unauthorized action.');
         }
+
+
+
 
         $article->delete();
 

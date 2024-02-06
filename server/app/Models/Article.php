@@ -32,7 +32,7 @@ class Article extends Model
 
     public function isAuthor(User $user): bool
     {
-        return $this->author == $user->id;
+        return $this->author_id == $user->id;
     }
 
     public function isFavorited(?User $user)

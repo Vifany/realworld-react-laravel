@@ -26,4 +26,11 @@ class Comment extends Model
     {
         return $this->belongsTo(Article::class);
     }
+
+    //Methods
+
+    public function isAuthor(User $user): bool
+    {
+        return $this->author_id == $user->id;
+    }
 }
