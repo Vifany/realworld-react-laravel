@@ -13,11 +13,10 @@ use App\Models\Article;
 
 class CommentController extends Controller
 {
-    public function create(CommentRequest $request, $slug)
+    public function store(CommentRequest $request, $slug)
     {
-        $author = Auth::user();
         $article = Article::where('date_slug', $slug)->first();
-        if (!$article) {
+        if ($article == null) {
             return response()->json(
                 [
                     'error' => 'Article not Found',
@@ -26,17 +25,14 @@ class CommentController extends Controller
             );
         }
 
-        $comment = DB::transaction(
-            function () use ($request, $author, $article) {
-                $comment = new Comment();
-                $comment->fill(
-                    $request->all()['comment']
-                );
-                $comment->author = $author->id;
-                $comment->article = $article->id;
-                $comment->save();
-                return $comment;
-            }
+        $comment = $article->comments()->create(
+            array_merge(
+                $request->comment,
+                [
+                    'author_id' => $request->user()->id,
+                ]
+            )
+
         );
 
         return [
@@ -62,14 +58,13 @@ class CommentController extends Controller
         ];
     }
 
-    public function delete(Request $request, $slug, $id)
+    public function destroy(Request $request, $slug, $id)
     {
-        $user = Auth::user();
         $comment = Comment::where('id', $id)->first();
-        if (!($comment->isAuthor($user))) {
+        if (!($comment->isAuthor($request->user()))) {
             return response()->json(
                 [
-                        'error' => 'Unauthorized',
+                        'error' => 'Not author of comment',
                     ],
                 403
             );

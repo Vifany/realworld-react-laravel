@@ -88,8 +88,17 @@ class Article extends Model
     protected function generateSlug()
     {
         $createdAtDate = Carbon::now()->format('Y-m-d');
-        $slog = Str::slug($this->title);
-        $this->date_slug = "{$slog}-{$createdAtDate}";
+        $slug = Str::slug($this->title) . '-' . $createdAtDate;
+        if (self::where('date_slug', $slug)->exists()) {
+            $count = 0;
+            $slog = $slug;
+            while (self::where('date_slug', $slug)->exists()) {
+                $count++;
+                $slug = $count . '-' . $slog;
+            }
+        }
+
+        $this->date_slug = $slug;
     }
 
 }

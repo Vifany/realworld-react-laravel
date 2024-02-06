@@ -23,12 +23,9 @@ class ArticleController extends Controller
         $article = DB::transaction(
             function () use ($request) {
 
-                $article = new Article();
-                $article->fill(
+                $article = $request->user()->articles()->create(
                     ($request->validated())['article']
                 );
-                $article->author()->associate($request->user());
-                $article->save();
 
                 foreach ($request->validated()['article']['tagList'] as $tag) {
                     $tag = Tag::firstOrCreate(['tag' => $tag]);
@@ -86,7 +83,7 @@ class ArticleController extends Controller
         if ($user = $request->input('favorited')) {
             $query->whereHas(
                 'favorited',
-                function ($query) {
+                function ($query) use ($user) {
                     $query->where(
                         'user_id',
                         Profile::idByName($user)
@@ -109,9 +106,10 @@ class ArticleController extends Controller
     {
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
-        $user = Auth::user();
 
-        $articles = ArticleResource::collection($user->getFeed())
+        $articles = ArticleResource::collection(
+            $request->user()->getFeed()
+        )
             ->sortByDesc('created_at')
             ->slice($offset, $limit);
 
@@ -151,9 +149,8 @@ class ArticleController extends Controller
 
     public function destroy(Request $request, $slug)
     {
-        $user = Auth::user();
         $article = Article::where('date_slug', $slug)->first();
-        if (!($article->isAuthor($user))) {
+        if (!($article->isAuthor($request->user()))) {
             return response()->json(
                 [
                         'error' => 'Unauthorized',

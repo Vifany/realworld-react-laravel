@@ -37,8 +37,8 @@ Route::prefix('/users')->group(
 Route::group(
     ['middleware' => 'auth:api', 'prefix' => '/user'],
     function () {
-        Route::GET('/', [ProfileController::class, 'getCurrenUser']);
-        Route::PUT('/', [ProfileController::class, 'updateCurrenUser']);
+        Route::GET('/', [UserController::class, 'getCurrenUser']);
+        Route::PUT('/', [UserController::class, 'updateCurrenUser']);
     }
 );
 
@@ -68,8 +68,8 @@ Route::group(
                     ['prefix' => '/comments'],
                     function () {
                         Route::GET('/', [CommentController::class, 'read']);
-                        Route::POST('/', [CommentController::class, 'create']);
-                        Route::DELETE('/{id}', [CommentController::class, 'delete']);
+                        Route::POST('/', [CommentController::class, 'store']);
+                        Route::DELETE('/{id}', [CommentController::class, 'destroy']);
                     }
                 );
             }
@@ -81,9 +81,9 @@ Route::group(
 Route::group(
     ['middleware' => 'auth:api', 'prefix' => '/profiles/{username}'],
     function () {
-        Route::GET('/', [ProfileController::Class, 'show']);
-        Route::POST('/follow', [ProfileController::Class, 'follow']);
-        Route::DELETE('/follow', [ProfileController::Class, 'unfollow']);
+        Route::GET('/', [UserController::Class, 'show']);
+        Route::POST('/follow', [UserController::Class, 'follow']);
+        Route::DELETE('/follow', [UserController::Class, 'unfollow']);
     }
 );
 

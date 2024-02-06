@@ -11,7 +11,11 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Profile;
 use App\Models\Article;
-use App\Http\Resources\json\CurrentUserResource;
+use App\Http\Resources\json\{
+    CurrentUserResource,
+    ProfileResource,
+};
+use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -58,7 +62,7 @@ class UserController extends Controller
     public function favorite(Request $request, $slug)
     {
         if ($article = Article::where('date_slug', $slug)->first()) {
-            Auth::user()->favorite($article);
+            $request->user()->favorite($article);
             return response()->json(
                 [
                 'message' => 'Article added to Favorites',
@@ -77,7 +81,7 @@ class UserController extends Controller
     public function unfavorite(Request $request, $slug)
     {
         if ($article = Article::where('date_slug', $slug)->first()) {
-            Auth::user()->unfavorite($article);
+            $request->user()->unfavorite($article);
             return response()->json(
                 ['message' => 'Article removed from Favorites'],
                 203
@@ -89,5 +93,67 @@ class UserController extends Controller
             ],
             404
         );
+    }
+
+    public function getCurrenUser(Request $request)
+    {
+        return new CurrentUserResource(
+            (object) [
+            'user' => Auth::user(),
+            'token' => Auth::refresh(),
+             ]
+        );
+    }
+
+    public function updateCurrenUser(UpdateUserRequest $request)
+    {
+        $user = $request->user();
+
+            DB::transaction(
+                function () use ($user, $request) {
+                    $user->fill($request->all()['user']);
+                    $user->profile->fill($request->validated()['user']);
+                    $user->save();
+                }
+            );
+
+        $token = Auth::refresh();
+
+        return new CurrentUserResource(
+            (object) [
+            'user' => $user,
+            'token' => $token,
+             ]
+        );
+    }
+
+    public function show(Request $request, $username)
+    {
+        $profile = Profile::where('username', $username)->first();
+        $following = false;
+        if ($user = $request->user()) {
+            $following = $user->isFollowing($profile->user);
+        }
+        return [
+            'profile' => new ProfileResource(
+                ['profile' => $profile, 'following' => $following]
+            ),
+        ];
+    }
+
+    public function follow(Request $request, $username)
+    {
+        $user = $request->user();
+        if (($userId = Profile::idByName($username)) != null) {
+            $user->follow($userId);
+        }
+    }
+
+    public function unfollow(Request $request, $username)
+    {
+        $user = $request->user();
+        if (($userId = Profile::idByName($username)) != null) {
+            $user->unfollow($userId);
+        }
     }
 }

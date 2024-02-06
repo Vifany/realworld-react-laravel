@@ -25,20 +25,19 @@ class AuthController extends Controller
             'password' => $request->input('user.password'),
         ];
         $token = Auth::attempt($credentials);
-        if ($token) {
-            /**
-             * @var App\Models\User $user
-             */
-            $user = Auth::user();
 
+        if ($token) {
             return new CurrentUserResource(
                 (object) [
-                'user' => $user,
+                'user' => Auth::user(),
                 'token' => $token,
                  ]
             );
         } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(
+                ['error' => 'Unauthorized'],
+                401
+            );
         }
     }
 
@@ -52,6 +51,9 @@ class AuthController extends Controller
     {
         $request->user()->token()->revoke();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(
+            ['message' => 'Successfully logged out'],
+            401
+        );
     }
 }
