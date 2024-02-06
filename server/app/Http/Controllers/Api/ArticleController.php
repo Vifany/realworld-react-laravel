@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\CreateArticleRequest;
+use App\Http\Requests\{
+    CreateArticleRequest,
+    IndexArticleRequest,
+};
 use App\Http\Resources\json\ArticleResource;
 use App\Models\{
     Article,
     Tag,
     Profile,
-    User
+    User,
 };
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -43,7 +46,7 @@ class ArticleController extends Controller
 
     public function show(Request $request, $slug)
     {
-        $article = Article::where('date_slug', $slug)->first();
+        $article = Article::Slugged($slug)->first();
         if ($article) {
             return [
                 'article' => new ArticleResource($article),
@@ -59,43 +62,27 @@ class ArticleController extends Controller
     }
 
 
-    public function index(Request $request)
+    public function index(IndexArticleRequest $request)
     {
 
-        $limit = $request->input('limit', 20);
-        $offset = $request->input('offset', 0);
+        $limit = $request->validated()['limit'];
+        $offset = $request->validated()['offset'];
 
-        $query = Article::query();
-
-        if ($tag = $request->input('tag',)) {
-            $query->whereHas(
-                'tags',
-                function ($query) use ($tag) {
-                    $query->where('tag', $tag);
-                }
+        $query = Article::Tagged($request->validated()['tag'])
+            ->WrittenBy(
+                Profile::idByName($request->validated()['author'])
+            )
+            ->FavoritedBy(
+                Profile::idByName($request->validated()['favorited'])
             );
-        }
 
-        if ($author = $request->input('author')) {
-            $query->where('author_id', Profile::idByName($author));
-        }
-
-        if ($user = $request->input('favorited')) {
-            $query->whereHas(
-                'favorited',
-                function ($query) use ($user) {
-                    $query->where(
-                        'user_id',
-                        Profile::idByName($user)
-                    );
-                }
-            );
-        }
 
         $query->orderBy('created_at', 'desc');
         $query->skip($offset)->take($limit);
 
-        $articles = ArticleResource::collection($query->get());
+        $articles = $query->get();
+
+        $articles = ArticleResource::collection($articles);
         return [
             'articlesCount' => $articles->count(),
             'articles' => $articles
@@ -122,7 +109,7 @@ class ArticleController extends Controller
 
     public function update(Request $request, $slug)
     {
-        $article = Article::where('date_slug', $slug)->first();
+        $article = Article::Slugged($slug)->first();
         if (!($article->isAuthor($request->user()))) {
             return response()->json(
                 [
@@ -149,7 +136,7 @@ class ArticleController extends Controller
 
     public function destroy(Request $request, $slug)
     {
-        $article = Article::where('date_slug', $slug)->first();
+        $article = Article::Slugged($slug)->first();
         if (!($article->isAuthor($request->user()))) {
             return response()->json(
                 [

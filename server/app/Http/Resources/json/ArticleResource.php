@@ -18,7 +18,7 @@ class ArticleResource extends JsonResource
     public static $wrap = 'article';
     public function toArray(Request $request): array
     {
-        $currentUser = Auth::user();
+        $currentUser = Auth::User();
         $article = $this;
         $author = $article->author()->first();
         return [

@@ -29,7 +29,14 @@ class Profile extends Model
 
     public static function idByName($username)
     {
-        $profile = self::where('username', $username)->first();
-        return $profile ? $profile->user_id : null;
+        if (!$username) {
+            return null;
+        }
+
+        if ($profile = self::where('username', $username)->first()) {
+            return $profile->user_id;
+        }
+
+        return -1;
     }
 }

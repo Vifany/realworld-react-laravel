@@ -15,7 +15,7 @@ class CommentController extends Controller
 {
     public function store(CommentRequest $request, $slug)
     {
-        $article = Article::where('date_slug', $slug)->first();
+        $article = Article::Slugged($slug)->first();
         if ($article == null) {
             return response()->json(
                 [
@@ -42,7 +42,7 @@ class CommentController extends Controller
 
     public function read(Request $request, $slug)
     {
-        $article = Article::where('date_slug', $slug)->first();
+        $article = Article::Slugged($slug)->first();
         if (!$article) {
             return response()->json(
                 [

@@ -61,7 +61,7 @@ class UserController extends Controller
 
     public function favorite(Request $request, $slug)
     {
-        if ($article = Article::where('date_slug', $slug)->first()) {
+        if ($article = Article::Slugged($slug)->first()) {
             $request->user()->favorite($article);
             return response()->json(
                 [
@@ -80,7 +80,7 @@ class UserController extends Controller
 
     public function unfavorite(Request $request, $slug)
     {
-        if ($article = Article::where('date_slug', $slug)->first()) {
+        if ($article = Article::Slugged($slug)->first()) {
             $request->user()->unfavorite($article);
             return response()->json(
                 ['message' => 'Article removed from Favorites'],

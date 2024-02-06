@@ -1,9 +1,8 @@
-<?php
-
-namespace App\Models;
+<?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -16,7 +15,7 @@ class Article extends Model
         'title',
         'description',
         'body',
-        'slug'
+        'date_slug',
     ];
 
     //methods
@@ -38,10 +37,10 @@ class Article extends Model
 
     public function isFavorited(?User $user)
     {
-        if ($user!=null) {
+        if ($user != null) {
             return $this->favorited->contains($user);
         }
-        return null;
+        return false;
     }
 
     //Relations
@@ -69,7 +68,7 @@ class Article extends Model
     //Medjiq
 
     /**
-     * Botinok with modifications
+     * Save with modifications
      *
      * @return parent
      */
@@ -101,4 +100,51 @@ class Article extends Model
         $this->date_slug = $slug;
     }
 
+
+    //Scopes
+
+    public function scopeTagged(Builder $query, $tag)
+    {
+        if ($tag == null) {
+            return $query;
+        }
+
+        return $query->whereHas(
+            'tags',
+            function ($query) use ($tag) {
+                $query->where('tag', $tag);
+            }
+        );
+    }
+
+    public function scopeWrittenBy(Builder $query, $author_id)
+    {
+        if ($author_id == null) {
+            return $query;
+        }
+
+        return $query->where('author_id', $author_id);
+    }
+
+    public function scopeFavoritedBy(Builder $query, $user_id)
+    {
+        if ($user_id == null) {
+            return $query;
+        }
+
+        return $query->whereHas(
+            'favorited',
+            function ($query) use ($user_id) {
+                $query->where(
+                    'user_id',
+                    $user_id
+                );
+            }
+        );
+    }
+
+    public function scopeSlugged(Builder $query, $slug)
+    {
+        return $query->where('date_slug', $slug);
+    }
 }
