@@ -29,14 +29,14 @@ class ArticleResource extends JsonResource
                   "username"=>  $author->profile->username,
                 ],
                 "body"=>  $article->body,
-                "createdAt"=>  $article->created_at,
+                "createdAt"=>  $article->created_at->toISOString(),
                 "description"=>  $article->description,
                 "favorited"=>  $article->isFavorited($currentUser),
                 "favoritesCount"=>  $article->favoritesCount(),
                 "slug"=>  $article->date_slug,
                 "tagList"=>  $article->getTagList(),
                 "title"=>  $article->title,
-                "updatedAt"=>  $article->updated_at
+                "updatedAt"=>  $article->updated_at->toISOString(),
                 ];
     }
 }

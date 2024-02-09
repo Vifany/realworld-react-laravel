@@ -1,20 +1,15 @@
 <?php
 
 use App\Models\{
-    Profile,
     User
 };
 
-use Illuminate\Support\Arr;
-
-use Illuminate\Testing\Fluent\AssertableJson;
-use Illuminate\Support\Facades\Hash;
 use function Pest\Faker\fake;
 use function Pest\Laravel\{
-    postJson,
     putJson,
-    assertDatabaseHas,
 };
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 const API_USERS_GET = 'api.user.get';
 const API_USERS_UPDATE = 'api.user.update';
@@ -36,7 +31,7 @@ beforeEach(
             User::factory()
                 ->withUsername($this->testArray->user->username)
                 ->create(
-                [
+                    [
                     'email' => $this->testArray->user->email,
                     'password' => Hash::make($this->testArray->user->password),
                     ]
@@ -45,9 +40,7 @@ beforeEach(
     }
 );
 
-it('should receive logged in user data', function () use ($testArray) {
-
-
+it('should receive logged in user data', function () {
     $this->withHeaders(['Authorization' => "Token $this->token"])
         ->get(route(API_USERS_GET))
         ->assertStatus(200)
@@ -63,7 +56,7 @@ it('should receive logged in user data', function () use ($testArray) {
         );
 });
 
-it('should update logged in user', function () use ($testArray) {
+it('should update logged in user', function () {
 
     $updateArray = [
         "user" =>

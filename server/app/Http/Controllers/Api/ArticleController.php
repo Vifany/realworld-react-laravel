@@ -39,9 +39,12 @@ class ArticleController extends Controller
             }
         );
 
-        return [
+        return response(
+            [
             'article' => new ArticleResource($article),
-            ];
+            ],
+            201
+        );
     }
 
     public function show(Request $request, $slug)

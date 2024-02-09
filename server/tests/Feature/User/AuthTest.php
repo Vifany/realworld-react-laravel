@@ -18,8 +18,6 @@ use function Pest\Laravel\{
 
 const API_USERS_CREATE = 'api.users.register';
 const API_USERS_LOGIN = 'api.users.login';
-const API_USERS_GET = 'api.user.get';
-const API_USERS_UPDATE = 'api.user.update';
 
 $testArray = (object) [
     "user" =>

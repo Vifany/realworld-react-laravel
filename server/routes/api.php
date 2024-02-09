@@ -49,11 +49,11 @@ Route::group(
 Route::group(
     ['middleware' => 'auth:api', 'prefix' => '/profiles/{username}'],
     function () {
-        Route::GET('/', [UserController::Class, 'show'])
+        Route::GET('/', [UserController::class, 'show'])
             ->name('api.profile.show');
-        Route::POST('/follow', [UserController::Class, 'follow'])
+        Route::POST('/follow', [UserController::class, 'follow'])
             ->name('api.profile.follow');
-        Route::DELETE('/follow', [UserController::Class, 'unfollow'])
+        Route::DELETE('/follow', [UserController::class, 'unfollow'])
             ->name('api.profile.unfollow');
     }
 );
@@ -61,14 +61,18 @@ Route::group(
 Route::group(
     ['middleware' => 'auth:api','prefix' => '/articles'],
     function () {
-        Route::POST('/', [ArticleController::class, 'store']);
-        Route::GET('/', [ArticleController::class, 'index'])->withoutMiddleware('auth:api');
-        Route::GET('/feed', [ArticleController::class, 'feed']);
+        Route::POST('/', [ArticleController::class, 'store'])
+            ->name('api.articles.store');
+        Route::GET('/', [ArticleController::class, 'index'])->withoutMiddleware('auth:api')
+            ->name('api.articles.index');
+        Route::GET('/feed', [ArticleController::class, 'feed'])
+            ->name('api.articles.feed');
 
         Route::group(
             ['prefix' => '/{slug}'],
             function () {
-                Route::GET('/', [ArticleController::class, 'show'])->withoutMiddleware('auth:api');
+                Route::GET('/', [ArticleController::class, 'show'])->withoutMiddleware('auth:api')
+                    ->name('api.articles.read');
                 Route::PUT('/', [ArticleController::class, 'update']);
                 Route::DELETE('/', [ArticleController::class, 'destroy']);
 

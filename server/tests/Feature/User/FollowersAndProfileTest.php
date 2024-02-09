@@ -2,20 +2,8 @@
 
 use App\Models\{
     Profile,
-    User
 };
-
-use Illuminate\Support\Arr;
-
-use Illuminate\Testing\Fluent\AssertableJson;
-use Illuminate\Support\Facades\Hash;
-use function Pest\Laravel\{
-    postJson,
-    putJson,
-    assertDatabaseHas,
-    getJson,
-    deleteJson,
-};
+use Illuminate\Support\Facades\Auth;
 
 beforeEach(function () {
     $this->userA = Profile::factory()->create()->user->first();
