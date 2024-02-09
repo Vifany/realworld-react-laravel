@@ -73,8 +73,10 @@ Route::group(
             function () {
                 Route::GET('/', [ArticleController::class, 'show'])->withoutMiddleware('auth:api')
                     ->name('api.articles.read');
-                Route::PUT('/', [ArticleController::class, 'update']);
-                Route::DELETE('/', [ArticleController::class, 'destroy']);
+                Route::PUT('/', [ArticleController::class, 'update'])
+                    ->name('api.articles.update');
+                Route::DELETE('/', [ArticleController::class, 'destroy'])
+                    ->name('api.articles.destroy');
 
                 Route::group(
                     ['prefix' => '/favorite'],

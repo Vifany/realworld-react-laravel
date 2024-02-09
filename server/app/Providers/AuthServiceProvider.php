@@ -28,16 +28,12 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('ud-article', function (User $user, ?Article $article) {
-            if($article){
-                return $article->isAuthor($user);
-            };
-
-            return false;
+            return $article && $user->id === $article->author_id;
         });
 
         Gate::define('d-comment', function (User $user, ?Comment $comment) {
             if($comment){
-                return $article->isAuthor($user);
+                return $comment->isAuthor($user);
             };
 
             return false;

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\{
     CreateArticleRequest,
     IndexArticleRequest,
+    UpdateArticleRequest
 };
 use App\Http\Resources\json\ArticleResource;
 use App\Models\{
@@ -15,8 +16,11 @@ use App\Models\{
     Profile,
     User,
 };
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\{
+    Auth,
+    DB,
+    Gate
+};
 
 class ArticleController extends Controller
 {
@@ -110,7 +114,7 @@ class ArticleController extends Controller
             ];
     }
 
-    public function update(Request $request, $slug)
+    public function update(UpdateArticleRequest $request, $slug)
     {
         $article = Article::Slugged($slug)->first();
 
@@ -136,21 +140,14 @@ class ArticleController extends Controller
     public function destroy(Request $request, $slug)
     {
         $article = Article::Slugged($slug)->first();
-
-        if (Gate::denies('ud-article', $article)) {
-            abort(403, 'Unauthorized action.');
+        if (!$article) {
+            return response()->json(['message' => 'Article not found'], 404);
         }
-
-
-
-
+        if (Gate::denies('ud-article', $article)) {
+            return response()->json(['message' => 'Not authorized'], 403);
+        }
         $article->delete();
 
-        return response()->json(
-            [
-                    'message' => 'Article successfully Deleted',
-                ],
-            204
-        );
+        return response()->json(['message' => 'Article successfully deleted'], 204);
     }
 }
