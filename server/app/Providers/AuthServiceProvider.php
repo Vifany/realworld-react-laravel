@@ -1,6 +1,7 @@
 <?php namespace App\Providers;
 
 use Laravel\Passport\Passport;
+use Illuminate\Support\Facades\Gate;
 use App\Models\{
     Article,
     User,

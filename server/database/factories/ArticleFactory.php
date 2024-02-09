@@ -19,7 +19,8 @@ class ArticleFactory extends Factory
         $author = User::inRandomOrder()->first();
         $createdAt = $author->created_at;
         $offsetMinutes = rand(60, 7 * 24 * 60);
-        $createdAtWithOffset = Carbon::parse($createdAt)->addMinutes($offsetMinutes);
+        $createdAtWithOffset = Carbon::parse($createdAt)
+            ->addMinutes($offsetMinutes);
 
         return [
             'author_id' => $author,

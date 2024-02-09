@@ -43,12 +43,14 @@ class UserController extends Controller
 
             $token = Auth::guard('api')->login($newUser);
 
-            return new CurrentUserResource(
+            return (new CurrentUserResource(
                 (object) [
                 'user' => $newUser,
                 'token' => $token,
                  ]
-            );
+            ))
+            ->response()
+            ->setStatusCode(201);
         } catch (\Exception $e) {
             return response()->json(
                 [
@@ -111,7 +113,7 @@ class UserController extends Controller
 
             DB::transaction(
                 function () use ($user, $request) {
-                    $user->fill($request->all()['user']);
+                    $user->fill($request->validated()['user']);
                     $user->profile->fill($request->validated()['user']);
                     $user->save();
                 }
@@ -119,11 +121,12 @@ class UserController extends Controller
 
         $token = Auth::refresh();
 
-        return new CurrentUserResource(
+        return (new CurrentUserResource(
             (object) [
             'user' => $user,
             'token' => $token,
              ]
+        )
         );
     }
 

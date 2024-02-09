@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UserFactory extends Factory
 {
@@ -27,5 +28,16 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password123456789'),
             'created_at' => $createdAt,
         ];
+    }
+
+    public function withUsername(string $username): self
+    {
+        return $this->afterCreating(function (User $user) use ($username) {
+            $user->profile()->create(
+                [
+                'username' => $username,
+                ]
+            );
+        });
     }
 }

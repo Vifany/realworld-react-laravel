@@ -7,6 +7,8 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    use RenderValidationExceptionAsJson;
+
     /**
      * The list of the inputs that are never flashed to the session on validation exceptions.
      *

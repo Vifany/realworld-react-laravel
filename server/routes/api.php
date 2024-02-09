@@ -27,8 +27,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('/users')->group(
     function () {
-        Route::POST('/', [UserController::class, 'registerUser']);
-        Route::POST('/login', [AuthController::class, 'login']);
+        Route::POST('/', [UserController::class, 'registerUser'])
+            ->name('api.users.register');
+        Route::POST('/login', [AuthController::class, 'login'])
+            ->name('api.users.login');
     }
 );
 
@@ -37,8 +39,10 @@ Route::prefix('/users')->group(
 Route::group(
     ['middleware' => 'auth:api', 'prefix' => '/user'],
     function () {
-        Route::GET('/', [UserController::class, 'getCurrenUser']);
-        Route::PUT('/', [UserController::class, 'updateCurrenUser']);
+        Route::GET('/', [UserController::class, 'getCurrenUser'])
+            ->name('api.user.get');
+        Route::PUT('/', [UserController::class, 'updateCurrenUser'])
+            ->name('api.user.update');
     }
 );
 

@@ -24,16 +24,18 @@ class RegisterUserRequest extends FormRequest
         return [
             'user.username' => 'required|max:64|unique:profiles,username',
             'user.email' => 'required|email|unique:users,email',
-            'user.password' => 'required|string|min:16',
+            'user.password' => 'required|string',
         ];
     }
 
     public function messages()
     {
         return [
-            'name.required' => 'The name field is required.',
+            'username.required' => 'The name field is required.',
             'email.required' => 'The email field is required.',
             'password.required' => 'The password field is required.',
+            'username.unique' => 'This username has already been taken',
+            'email.unique' => 'This email has already been used',
         ];
     }
 }
