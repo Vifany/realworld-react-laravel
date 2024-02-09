@@ -139,7 +139,7 @@ class UserController extends Controller
         }
         return [
             'profile' => new ProfileResource(
-                ['profile' => $profile, 'following' => $following]
+                (object) ['profile' => $profile, 'following' => $following]
             ),
         ];
     }
@@ -149,6 +149,13 @@ class UserController extends Controller
         $user = $request->user();
         if (($userId = Profile::idByName($username)) != null) {
             $user->follow($userId);
+            $profile = Profile::where('username', $username)->first();
+            $following = $user->isFollowing($profile->user);
+            return [
+                'profile' => new ProfileResource(
+                    (object) ['profile' => $profile, 'following' => $following]
+                ),
+            ];
         }
     }
 
@@ -157,6 +164,13 @@ class UserController extends Controller
         $user = $request->user();
         if (($userId = Profile::idByName($username)) != null) {
             $user->unfollow($userId);
+            $profile = Profile::where('username', $username)->first();
+            $following = $user->isFollowing($profile->user);
+            return [
+                'profile' => new ProfileResource(
+                    (object) ['profile' => $profile, 'following' => $following]
+                ),
+            ];
         }
     }
 }

@@ -41,8 +41,20 @@ Route::group(
     function () {
         Route::GET('/', [UserController::class, 'getCurrenUser'])
             ->name('api.user.get');
-        Route::PUT('/', [UserController::class, 'updateCurrenUser'])
+            Route::PUT('/', [UserController::class, 'updateCurrenUser'])
             ->name('api.user.update');
+    }
+);
+
+Route::group(
+    ['middleware' => 'auth:api', 'prefix' => '/profiles/{username}'],
+    function () {
+        Route::GET('/', [UserController::Class, 'show'])
+            ->name('api.profile.show');
+        Route::POST('/follow', [UserController::Class, 'follow'])
+            ->name('api.profile.follow');
+        Route::DELETE('/follow', [UserController::Class, 'unfollow'])
+            ->name('api.profile.unfollow');
     }
 );
 
@@ -82,14 +94,6 @@ Route::group(
 );
 
 
-Route::group(
-    ['middleware' => 'auth:api', 'prefix' => '/profiles/{username}'],
-    function () {
-        Route::GET('/', [UserController::Class, 'show']);
-        Route::POST('/follow', [UserController::Class, 'follow']);
-        Route::DELETE('/follow', [UserController::Class, 'unfollow']);
-    }
-);
 
 Route::GET('/tags', [TagController::Class, 'index']);
 

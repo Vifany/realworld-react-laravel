@@ -9,7 +9,6 @@ use Illuminate\Support\Arr;
 
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Support\Facades\Hash;
-
 use function Pest\Faker\fake;
 use function Pest\Laravel\{
     postJson,
@@ -23,25 +22,28 @@ const API_USERS_UPDATE = 'api.user.update';
 
 
 
-beforeEach(function () {
-    $this->testArray = (object) [
+beforeEach(
+    function () {
+        $this->testArray = (object) [
         "user" =>
         (object) [
-          "username" => fake()->word(),
-          "email" => fake()->email(),
-          "password" => fake()->password(17, 24),
+            "username" => fake()->word(),
+            "email" => fake()->email(),
+            "password" => fake()->password(17, 24),
         ],
         ];
-    $this->testUser = User::factory()
-    ->withUsername($this->testArray->user->username)
-    ->create(
-        [
-            'email' => $this->testArray->user->email,
-            'password' => Hash::make($this->testArray->user->password),
-        ]
-    );
-    $this->token = Auth::guard('api')->login($this->testUser);
-});
+        $this->testUser =
+            User::factory()
+                ->withUsername($this->testArray->user->username)
+                ->create(
+                [
+                    'email' => $this->testArray->user->email,
+                    'password' => Hash::make($this->testArray->user->password),
+                    ]
+                );
+            $this->token = Auth::guard('api')->login($this->testUser);
+    }
+);
 
 it('should receive logged in user data', function () use ($testArray) {
 
