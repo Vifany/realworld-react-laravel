@@ -63,37 +63,21 @@ class UserController extends Controller
 
     public function favorite(Request $request, $slug)
     {
-        if ($article = Article::Slugged($slug)->first()) {
-            $request->user()->favorite($article);
-            return response()->json(
-                [
-                'message' => 'Article added to Favorites',
-                ],
-                200
-            );
-        }
+        $article = Article::Slugged($slug)->firstOrFail();
+        $request->user()->favorite($article);
         return response()->json(
-            [
-            'error' => 'Article not Found',
-            ],
-            404
+            ['message' => 'Article added to Favorites'],
+            200
         );
     }
 
     public function unfavorite(Request $request, $slug)
     {
-        if ($article = Article::Slugged($slug)->first()) {
-            $request->user()->unfavorite($article);
-            return response()->json(
-                ['message' => 'Article removed from Favorites'],
-                203
-            );
-        }
+        $article = Article::Slugged($slug)->firstOrFail();
+        $request->user()->unfavorite($article);
         return response()->json(
-            [
-            'error' => 'Article not Found',
-            ],
-            404
+            ['message' => 'Article removed from Favorites'],
+            200
         );
     }
 

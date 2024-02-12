@@ -117,9 +117,11 @@ class ArticleController extends Controller
     public function update(UpdateArticleRequest $request, $slug)
     {
         $article = Article::Slugged($slug)->first();
-
+        if (!$article) {
+            return response()->json(['message' => 'Article not found'], 404);
+        }
         if (Gate::denies('ud-article', $article)) {
-            abort(403, 'Unauthorized action.');
+            return response()->json(['message' => 'Not authorized'], 401);
         }
 
         $article = DB::transaction(
@@ -132,9 +134,9 @@ class ArticleController extends Controller
             }
         );
 
-        return [
+        return response([
             'article' => new ArticleResource($article),
-            ];
+        ], 200);
     }
 
     public function destroy(Request $request, $slug)
@@ -144,7 +146,7 @@ class ArticleController extends Controller
             return response()->json(['message' => 'Article not found'], 404);
         }
         if (Gate::denies('ud-article', $article)) {
-            return response()->json(['message' => 'Not authorized'], 403);
+            return response()->json(['message' => 'Not authorized'], 401);
         }
         $article->delete();
 

@@ -4,7 +4,8 @@ use Illuminate\Http\Request;
 use App\Models\{
     Profile,
     Article,
-    Tag
+    Tag,
+    User
 };
 use App\Http\Resources\JSON\{
     ArticleResource
@@ -16,9 +17,8 @@ use Carbon\Carbon;
 use function Pest\Faker\fake;
 
 beforeEach(function () {
-    $this->testUser = Profile::factory()->create()->user->first();
-    $this->token = Auth::guard('api')->login($this->testUser);
-    $this->testArticle = Article::factory()->create();
+    $this->testUser = Profile::factory(5)->create()->first()->user->first();
+    $this->testArticle = Article::factory()->create(['author_id' => $this->testUser->id]);
     Tag::factory(5)->create();
     $this->testArticle->tags()->attach(
         Tag::inRandomOrder()->limit(rand(2, 5))->get()
@@ -80,12 +80,12 @@ beforeEach(function () {
 
 
 it('creates article', function () {
-    // dd($this->articleTemp);
-    $this->withHeaders(['Authorization' => "Token $this->token"])
-        ->postJson(
-            route('api.articles.store'),
-            $this->articleReq
-        )
+    $this->actingAs($this->testUser);
+    $this->postJson(
+        route('api.articles.store'),
+        $this->articleReq
+    )
+
         ->assertStatus(201)
         ->assertJson($this->articleResp)
         ->assertJsonStructure($this->articleTemp);
@@ -104,6 +104,7 @@ it('reads article by slug for non logged in user', function () {
 });
 
 it('updates article by slug', function ($field, $value) {
+    $this->actingAs($this->testUser);
     $updData = [$field => $value];
     $chekData = $updData;
     if ($field == 'title') {
@@ -113,14 +114,13 @@ it('updates article by slug', function ($field, $value) {
         );
     }
 
-    $this->withHeaders(['Authorization' => "Token $this->token"])
-        ->putJson(
-            route(
-                'api.articles.update',
-                ['slug' => $this->testArticle->date_slug]
-            ),
-            ['article' => [$field => $value]]
-        )
+    $this->putJson(
+        route(
+            'api.articles.update',
+            ['slug' => $this->testArticle->date_slug]
+        ),
+        ['article' => [$field => $value]]
+    )
         ->assertStatus(200)
         ->assertJsonStructure($this->articleTemp)
         ->assertJson(['article' => $chekData]);
@@ -133,28 +133,37 @@ it('updates article by slug', function ($field, $value) {
     ]
 );
 
+it('refuses to update article by slug if not author', function () {
+    $uData = ['article' => ['title' => 'pook']];
+    $this->putJson(
+        route(
+            'api.articles.update',
+            ['slug' => $this->testArticle->date_slug]
+        ),
+        $uData
+    )
+        ->assertStatus(401);
+});
+
 it('deletes article by slug', function () {
-    $this->withHeaders(['Authorization' => "Token $this->token"])
-        ->deleteJson(
-            route(
-                'api.articles.destroy',
-                ['slug' => $this->testArticle->date_slug]
-            )
+    $this->actingAs($this->testUser);
+    $this->deleteJson(
+        route(
+            'api.articles.destroy',
+            ['slug' => $this->testArticle->date_slug]
         )
+    )
         ->assertStatus(204);
     expect(Article::find($this->testArticle->id))->toBeNull();
 });
 
 it('refuses to delete article if not author', function () {
-    $testUser2 = Profile::factory()->create()->user->first();
-    $token = Auth::guard('api')->login($testUser2);
-    $this->withHeaders(['Authorization' => "Token $token"])
-        ->deleteJson(
-            route(
-                'api.articles.destroy',
-                ['slug' => $this->testArticle->date_slug]
-            )
+    $this->deleteJson(
+        route(
+            'api.articles.destroy',
+            ['slug' => $this->testArticle->date_slug]
         )
-        ->assertStatus(403);
+    )
+    ->assertStatus(401);
     expect(Article::find($this->testArticle->id))->not()->toBeNull();
 });

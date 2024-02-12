@@ -81,8 +81,10 @@ Route::group(
                 Route::group(
                     ['prefix' => '/favorite'],
                     function () {
-                        Route::POST('/', [UserController::class, 'favorite']);
-                        Route::DELETE('/', [UserController::class, 'unfavorite']);
+                        Route::POST('/', [UserController::class, 'favorite'])
+                            ->name('api.articles.favorite');
+                        Route::DELETE('/', [UserController::class, 'unfavorite'])
+                            ->name('api.articles.unfavorite');
                     }
                 );
 
@@ -101,7 +103,7 @@ Route::group(
 
 
 
-Route::GET('/tags', [TagController::Class, 'index']);
+Route::GET('/tags', [TagController::class, 'index'])->name('api.tags.get');
 
 /*
 The great apistroitelny plan
