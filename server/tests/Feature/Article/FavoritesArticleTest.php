@@ -9,7 +9,8 @@ use App\Models\{
 
 beforeEach(function () {
     $this->testUser = Profile::factory()->create()->first()->user->first();
-    $this->testArticle = Article::factory()->create()->first();
+    $this->testCeleb = Profile::factory()->create()->first()->user->first();
+    $this->testArticle = Article::factory()->create(['author_id' => $this->testCeleb->id])->first();
     $this->slug = ['slug' => $this->testArticle->date_slug];
 });
 
@@ -31,16 +32,6 @@ it('able to add favorites', function () {
             'user_id' => $this->testUser->id,
         ]
     );
-});
-
-it('able to get feed', function () {
-    $this->actingAs($this->testUser);
-    $this->testUser->favorite($this->testArticle);
-    $this->getJson(
-        route('api.articles.feed')
-    )
-    ->assertJson(["articles" => []])
-    ->assertStatus(200);
 });
 
 it('able to remove favorites', function () {

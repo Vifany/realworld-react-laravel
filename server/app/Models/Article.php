@@ -27,7 +27,7 @@ class Article extends Model
 
     public function getTagList()
     {
-        return $this->tags->pluck('tag')->toArray();
+        return $this->tags->pluck('tag')->sort()->values()->toArray();
     }
 
     public function isAuthor(User $user): bool

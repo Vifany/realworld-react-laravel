@@ -28,7 +28,7 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('ud-article', function (User $user, ?Article $article) {
-            // dd($user->id, $article->author_id);
+
             return $user->id === $article->author_id;
         });
 

@@ -51,7 +51,7 @@ beforeEach(function () {
             "title" => $this->articleReq["article"]["title"],
             "description" => $this->articleReq["article"]["description"],
             "body" => $this->articleReq["article"]["body"],
-            "tagList" => $this->articleReq["article"]["tagList"],
+            "tagList" => collect($this->articleReq["article"]["tagList"])->sort()->values()->toArray(),
             ],
         ];
     $this->articleTemp =
