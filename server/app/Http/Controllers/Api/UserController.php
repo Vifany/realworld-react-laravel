@@ -50,7 +50,7 @@ class UserController extends Controller
                  ]
             ))
             ->response()
-            ->setStatusCode(201);
+            ->setStatusCode(200);
         } catch (\Exception $e) {
             return response()->json(
                 [

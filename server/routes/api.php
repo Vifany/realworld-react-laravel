@@ -91,9 +91,12 @@ Route::group(
                 Route::group(
                     ['prefix' => '/comments'],
                     function () {
-                        Route::GET('/', [CommentController::class, 'read']);
-                        Route::POST('/', [CommentController::class, 'store']);
-                        Route::DELETE('/{id}', [CommentController::class, 'destroy']);
+                        Route::GET('/', [CommentController::class, 'read'])->withoutMiddleware('auth:api')
+                            ->name('api.articles.comments.read');
+                        Route::POST('/', [CommentController::class, 'store'])
+                            ->name('api.articles.comments.store');
+                        Route::DELETE('/{id}', [CommentController::class, 'destroy'])
+                            ->name('api.articles.comments.destroy');
                     }
                 );
             }

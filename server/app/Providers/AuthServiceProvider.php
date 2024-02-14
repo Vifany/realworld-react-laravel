@@ -33,11 +33,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('d-comment', function (User $user, ?Comment $comment) {
-            if($comment){
-                return $comment->isAuthor($user);
-            };
-
-            return false;
+            return $user->id === $comment->author_id;
         });
     }
 }

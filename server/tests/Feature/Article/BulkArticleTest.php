@@ -33,7 +33,7 @@ it('able to get feed', function () {
         }
     }
 
-    $this->assertTrue($found, 'The desired key-value pair was not found in the array of JSON data.');
+    $this->assertTrue($found, 'The desired slug not found in the array of JSON data.');
 });
 
 it('able to get index without filter', function () {

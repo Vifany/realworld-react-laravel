@@ -47,7 +47,7 @@ class ArticleController extends Controller
             [
             'article' => new ArticleResource($article),
             ],
-            201
+            200
         );
     }
 

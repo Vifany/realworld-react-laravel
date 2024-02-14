@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\{
+    Gate
+};
 use App\Http\Requests\CommentRequest;
 use App\Http\Resources\Json\CommentResource;
 use App\Models\Comment;
@@ -61,16 +62,16 @@ class CommentController extends Controller
     {
         $comment = Comment::where('id', $id)->first();
         if (Gate::denies('d-comment', $comment)) {
-            abort(403, 'Unauthorized action.');
-        }
+            return response()->json(['message' => 'Not authorized'], 401);
+        } else {
+            $comment->delete();
 
-        $comment->delete();
-
-        return response()->json(
-            [
+            return response()->json(
+                [
                     'message' => 'Comment successfully Deleted',
                 ],
-            204
-        );
+                200
+            );
+        }
     }
 }
