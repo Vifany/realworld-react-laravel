@@ -1,3 +1,5 @@
+[![ru](https://img.shields.io/badge/lang-en-red.svg)]([https://github.com/jonatasemidio/multilanguage-readme-pattern/blob/master/README.md](https://github.com/Vifany/realworld-react-laravel/blob/main/README.ru.md))
+
 > ### Laravel+React codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
 
 
