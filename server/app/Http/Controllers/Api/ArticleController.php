@@ -14,17 +14,19 @@ use App\Models\{
     Article,
     Tag,
     Profile,
-    User,
 };
 use Illuminate\Support\Facades\{
-    Auth,
     DB,
     Gate
 };
 
 class ArticleController extends Controller
 {
-
+    /**
+     * Store new article
+     *
+     * @param CreateArticleRequest $request
+     */
     public function store(CreateArticleRequest $request)
     {
         $article = DB::transaction(
@@ -43,7 +45,7 @@ class ArticleController extends Controller
             }
         );
 
-        return response(
+        return response()->json(
             [
             'article' => new ArticleResource($article),
             ],
@@ -51,24 +53,39 @@ class ArticleController extends Controller
         );
     }
 
-    public function show(Request $request, $slug)
+    /**
+     * Show article by slug
+     *
+     * @param String $slug
+     */
+    public function show($slug)
     {
         $article = Article::Slugged($slug)->first();
         if ($article) {
-            return [
+            return response()->json([
                 'article' => new ArticleResource($article),
-                ];
+                ]);
         } else {
             return response()->json(
                 [
-                        'error' => 'Article not Found',
-                    ],
+                    'error' => 'Article not Found',
+                ],
                 404
             );
         }
     }
 
-
+    /**
+     * Show index of articles with set filter
+     *
+     * @param IndexArticleRequest $request request zero or more
+     * of following parameters:
+     * limit - amount of articles in return
+     * offset - offset from beginning of return of query
+     * tag - tag
+     * author - author of article
+     * favorited - user who favorited article
+     */
     public function index(IndexArticleRequest $request)
     {
 
@@ -90,12 +107,17 @@ class ArticleController extends Controller
         $articles = $query->get();
 
         $articles = ArticleResource::collection($articles);
-        return [
+        return response()->json([
             'articlesCount' => $articles->count(),
             'articles' => $articles
-            ];
+            ]);
     }
 
+    /**
+     * Get feed for currently logged in user
+     *
+     * @param  Request $request
+     */
     public function feed(Request $request)
     {
         $limit = $request->input('limit', 20);
@@ -108,12 +130,18 @@ class ArticleController extends Controller
             ->slice($offset, $limit);
 
 
-        return [
+        return response()->json([
             'articlesCount' => $articles->count(),
             'articles' => $articles
-            ];
+            ]);
     }
 
+    /**
+     * Update article by slug, if user is author
+     *
+     * @param  UpdateArticleRequest $request
+     * @param  string $slug
+     */
     public function update(UpdateArticleRequest $request, $slug)
     {
         $article = Article::Slugged($slug)->first();
@@ -134,11 +162,20 @@ class ArticleController extends Controller
             }
         );
 
-        return response([
+        return response()->json(
+            [
             'article' => new ArticleResource($article),
-        ], 200);
+            ],
+            200
+        );
     }
 
+    /**
+     * Destroy article by slug, if user is author
+     *
+     * @param  Request $request
+     * @param  string $slug
+     */
     public function destroy(Request $request, $slug)
     {
         $article = Article::Slugged($slug)->first();

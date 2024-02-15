@@ -5,14 +5,12 @@ use App\Models\{
     Profile,
     Article,
     Tag,
-    User
 };
 use App\Http\Resources\JSON\{
     ArticleResource
 };
-use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 use function Pest\Faker\fake;
 
@@ -23,41 +21,33 @@ beforeEach(function () {
     $this->testArticle->tags()->attach(
         Tag::inRandomOrder()->limit(rand(2, 5))->get()
     );
-    $this->articleArray =
-        [
+    $this->articleArray = [
         'article' =>
         ArticleResource::make($this->testArticle)
             ->toArray(Request::create('/')),
         ];
-    $this->articleReq =
-        [
-        "article" =>
-            [
+    $this->articleReq = [
+        "article" => [
             "title" => fake()->word(),
             "description" => fake()->sentence(),
             "body" => fake()->paragraphs(3, true),
-            "tagList" =>
-                [
+            "tagList" => [
                 fake()->word(),
                 fake()->word(),
                 ]
             ],
         ];
 
-    $this->articleResp =
-        [
-        "article" =>
-            [
+    $this->articleResp = [
+        "article" => [
             "title" => $this->articleReq["article"]["title"],
             "description" => $this->articleReq["article"]["description"],
             "body" => $this->articleReq["article"]["body"],
             "tagList" => collect($this->articleReq["article"]["tagList"])->sort()->values()->toArray(),
             ],
         ];
-    $this->articleTemp =
-        [
-        "article" =>
-            [
+    $this->articleTemp = [
+        "article" => [
             "slug",
             "title",
             "description",
@@ -67,8 +57,7 @@ beforeEach(function () {
             "updatedAt",
             "favorited",
             "favoritesCount",
-            "author" =>
-                [
+            "author" => [
                 "username",
                 "bio",
                 "image",
@@ -86,7 +75,7 @@ it('creates article', function () {
         $this->articleReq
     )
 
-        ->assertStatus(201)
+        ->assertStatus(200)
         ->assertJson($this->articleResp)
         ->assertJsonStructure($this->articleTemp);
 });

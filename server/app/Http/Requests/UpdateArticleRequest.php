@@ -26,7 +26,6 @@ class UpdateArticleRequest extends FormRequest
             'article.description' => ['nullable','string','max:512'],
             'article.body' => ['nullable','string'],
             'article.tagList' => ['nullable','array'],
-            'article.tagList.*' => ['string', 'max:32'],
         ];
     }
 }

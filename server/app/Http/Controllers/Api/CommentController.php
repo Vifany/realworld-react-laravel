@@ -14,6 +14,12 @@ use App\Models\Article;
 
 class CommentController extends Controller
 {
+    /**
+     * Store comment for an article by article slug
+     *
+     * @param  CommentRequest $request
+     * @param  string $slug
+     */
     public function store(CommentRequest $request, $slug)
     {
         $article = Article::Slugged($slug)->first();
@@ -28,19 +34,25 @@ class CommentController extends Controller
 
         $comment = $article->comments()->create(
             array_merge(
-                $request->comment,
+                $request->validated()['comment'],
                 [
                     'author_id' => $request->user()->id,
                 ]
             )
         );
 
-        return [
+        return response()->json([
             'comment' => new CommentResource($comment),
-        ];
+        ]);
     }
 
-    public function read(Request $request, $slug)
+    /**
+     * Read comments of an article by slug
+     *
+     * @param  Request $request
+     * @param  string $slug
+     */
+    public function read($slug)
     {
         $article = Article::Slugged($slug)->first();
         if (!$article) {
@@ -53,12 +65,18 @@ class CommentController extends Controller
         }
 
         $comments = CommentResource::collection($article->comments);
-        return [
+        return response()->json([
             'comments' => $comments,
-        ];
+        ]);
     }
 
-    public function destroy(Request $request, $slug, $id)
+    /**
+     * Destroy comment for an article if user is author of comment
+     *
+     * @param string $slug - specification requires
+     * @param  int $id - comment id
+     */
+    public function destroy($slug, $id)
     {
         $comment = Comment::where('id', $id)->first();
         if (Gate::denies('d-comment', $comment)) {

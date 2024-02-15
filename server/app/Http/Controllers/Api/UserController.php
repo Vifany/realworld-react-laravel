@@ -19,6 +19,11 @@ use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
+    /**
+     * Store and login new user
+     *
+     * @param  RegisterUserRequest $request
+     */
     public function registerUser(RegisterUserRequest $request)
     {
         try {
@@ -26,15 +31,15 @@ class UserController extends Controller
                     function () use ($request) {
                         $newUser = User::create(
                             [
-                            'email' => $request->input('user.email'),
+                            'email' => $request->validated()['user']['email'],
                             'password' => Hash::make(
-                                $request->input('user.password')
+                                $request->validated()['user']['password']
                             ),
                             ]
                         );
                         $newUser->profile()->create(
                             [
-                            'username' => $request->input('user.username'),
+                            'username' => $request->validated()['user']['username'],
                             ]
                         );
                         return $newUser;
@@ -43,14 +48,15 @@ class UserController extends Controller
 
             $token = Auth::guard('api')->login($newUser);
 
-            return (new CurrentUserResource(
-                (object) [
-                'user' => $newUser,
-                'token' => $token,
-                 ]
-            ))
-            ->response()
-            ->setStatusCode(200);
+            return response()->json(
+                new CurrentUserResource(
+                    (object) [
+                    'user' => $newUser,
+                    'token' => $token,
+                    ]
+                ),
+                200
+            );
         } catch (\Exception $e) {
             return response()->json(
                 [
@@ -61,6 +67,12 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Add article to favorites by slug
+     *
+     * @param  Request $request
+     * @param  string $slug
+     */
     public function favorite(Request $request, $slug)
     {
         $article = Article::Slugged($slug)->firstOrFail();
@@ -71,6 +83,12 @@ class UserController extends Controller
         );
     }
 
+    /**
+    * Remove article from favorites by slug
+    *
+    * @param  Request $request
+    * @param  string $slug
+    */
     public function unfavorite(Request $request, $slug)
     {
         $article = Article::Slugged($slug)->firstOrFail();
@@ -81,16 +99,26 @@ class UserController extends Controller
         );
     }
 
-    public function getCurrenUser(Request $request)
+    /**
+     * Refresh current user info
+     *
+     * @param  Request $request
+     */
+    public function getCurrenUser()
     {
-        return new CurrentUserResource(
+        return response()->json(new CurrentUserResource(
             (object) [
             'user' => Auth::user(),
             'token' => Auth::refresh(),
              ]
-        );
+        ));
     }
 
+    /**
+     * Update current user database entry
+     *
+     * @param  UpdateUserRequest $request
+     */
     public function updateCurrenUser(UpdateUserRequest $request)
     {
         $user = $request->user();
@@ -103,31 +131,43 @@ class UserController extends Controller
                 }
             );
 
-        $token = Auth::refresh();
-
-        return (new CurrentUserResource(
+        return response()->json(new CurrentUserResource(
             (object) [
             'user' => $user,
-            'token' => $token,
-             ]
-        )
-        );
+            'token' => Auth::refresh(),
+            ]
+        ));
     }
 
+    /**
+     * Show user profile by username
+     *
+     * @param  Request $request
+     * @param  string $username
+     */
     public function show(Request $request, $username)
     {
         $profile = Profile::where('username', $username)->first();
-        $following = false;
+        $following = false; //in case of not logged in user
         if ($user = $request->user()) {
             $following = $user->isFollowing($profile->user);
         }
-        return [
+        return response()->json([
             'profile' => new ProfileResource(
-                (object) ['profile' => $profile, 'following' => $following]
+                (object) [
+                    'profile' => $profile,
+                    'following' => $following,
+                ]
             ),
-        ];
+        ]);
     }
 
+    /**
+     * Follow user by username
+     *
+     * @param  Request $request
+     * @param  string $username
+     */
     public function follow(Request $request, $username)
     {
         $user = $request->user();
@@ -137,12 +177,21 @@ class UserController extends Controller
             $following = $user->isFollowing($profile->user);
             return [
                 'profile' => new ProfileResource(
-                    (object) ['profile' => $profile, 'following' => $following]
+                    (object) [
+                        'profile' => $profile,
+                        'following' => $following,
+                    ]
                 ),
             ];
         }
     }
 
+    /**
+     * Unfollow user by username
+     *
+     * @param  Request $request
+     * @param  string $username
+     */
     public function unfollow(Request $request, $username)
     {
         $user = $request->user();
@@ -152,7 +201,10 @@ class UserController extends Controller
             $following = $user->isFollowing($profile->user);
             return [
                 'profile' => new ProfileResource(
-                    (object) ['profile' => $profile, 'following' => $following]
+                    (object) [
+                        'profile' => $profile,
+                        'following' => $following,
+                    ]
                 ),
             ];
         }

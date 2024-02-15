@@ -7,10 +7,13 @@ use App\Models\Tag;
 
 class TagController extends Controller
 {
+    /**
+     * Get index for tags
+     */
     public function index()
     {
-        return [
+        return response()->json([
             'tags' => Tag::orderBy('tag')->pluck('tag'),
-        ];
+        ]);
     }
 }

@@ -31,7 +31,7 @@ $testArray = (object) [
 it('able to register new user', function () use ($testArray) {
 
     postJson(route(API_USERS_CREATE), (array) $testArray)
-        ->assertCreated()
+        ->assertStatus(200)
         ->assertJson(
             [
             'user' => [

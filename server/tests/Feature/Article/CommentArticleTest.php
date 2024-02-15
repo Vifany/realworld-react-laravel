@@ -24,14 +24,12 @@ it('able to comment an article', function () {
         ->assertJson($testCommentBody)
         ->assertJsonStructure(
             [
-            'comment' =>
-                [
+            'comment' => [
                 "id",
                 "createdAt",
                 "updatedAt",
                 "body",
-                "author" =>
-                    [
+                "author" => [
                     "username",
                     "bio",
                     "image",
